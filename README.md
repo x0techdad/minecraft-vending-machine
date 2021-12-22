@@ -7,7 +7,7 @@
 </p>
 
 ## Intro
-  Hello. This project was initially developed out of a need to quickly deploy and re-deploy my own [Minecraft](https://minecraft.fandom.com/wiki/Minecraft_Wiki) servers, in the cloud, for free!* The servers are used in various scenarios; work projects, family gaming, kid coding camp sessions, and so dad can nerd out with his friends. :nerd_face:
+  Hello. This project was initially developed out of a need to quickly deploy and re-deploy my own [Minecraft](https://minecraft.fandom.com/wiki/Minecraft_Wiki) servers, in the cloud, for cheap*. The servers are used in various scenarios; work projects, family gaming, kid coding camp sessions, and so dad can nerd out with his friends. :nerd_face:
   
   The project is also being used to demo, teach, learn, and play with the cool cloud tech listed in the [tech](#tech) section by everyday folks. 
   
@@ -25,7 +25,7 @@
   
   * Get help at [CoolDad.Cloud Discord](https://discord.gg/aCnzN2QsQE) 
 
-  ### Only the first 30 days or $200 of cloud consumption are free. 💰
+  ### * Only the first 30 days or $200 of cloud consumption are free. 💰
   Stop or delete cloud compute resources when not in use to save on runtime costs. A [Minecraft client](https://www.minecraft.net/en-us/get-minecraft#) is required to connect to the server and play, DO NOT purchase/use the Java client, more on this in the next section.  
 
 ## Overview
