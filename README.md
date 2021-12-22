@@ -23,7 +23,7 @@
     * Share feedback and comments via listed socials
     * Submit issues, bugs, feature requests via [GitHub](https://github.com/cool-tech-dad/minecraft-vending-machine/issues)
   
-  * Get help at [CoolDad.Cloud Discord](https://discord.gg/d2RzNTYk)
+  * Get help at [CoolDad.Cloud Discord](https://discord.gg/aCnzN2QsQE) 
 
   ### Only the first 30 days or $200 of cloud consumption are free. 💰
   Stop or delete cloud compute resources when not in use to save on runtime costs. A [Minecraft client](https://www.minecraft.net/en-us/get-minecraft#) is required to connect to the server and play, DO NOT purchase/use the Java client, more on this in the next section.  
@@ -229,8 +229,9 @@
 
 ## Meta
   Maintained by: Sam M. (CoolDad)\
-  [@tech_dad_](https://twitter.com/tech_dad_)\
-  [GitHub](https://github.com/archsam)
+  Twitter: [@tech_dad_](https://twitter.com/tech_dad_)\
+  GitHub: [archsam](https://github.com/archsam)\
+  Discord: CoolDad#7007
 
 ## Contribute
 1. Fork project (<https://github.com/cool-tech-dad/minecraft-vending-machine/fork>)
