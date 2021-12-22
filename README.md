@@ -11,7 +11,7 @@
   
   The project is also being used to demo, teach, learn, and play with the cool cloud tech listed in the [tech](#tech) section by everyday folks. 
   
-  Welcome to the community! 
+  Welcome! 
   * If you want a lot more project background and technical overview, continue to the next section.
 
   * If you want to jump into the deep end, I like your style, head over to the [setup](#setup) section. 
@@ -230,7 +230,7 @@
 ## Meta
   Maintained by: Sam M. (CoolDad)\
   Twitter: [@tech_dad_](https://twitter.com/tech_dad_)\
-  GitHub: [archsam](https://github.com/archsam)\
+  GitHub: [cool-tech-dad](https://github.com/cool-tech-dad)\
   Discord: CoolDad#7007
 
 ## Contribute
