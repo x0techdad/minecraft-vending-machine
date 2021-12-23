@@ -1,0 +1,19 @@
+FROM ubuntu:20.04
+
+RUN apt-get update && \
+    apt-get -y install curl && \
+    apt-get -y install unzip && \
+    apt-get clean
+
+VOLUME ["/data"]
+WORKDIR /data
+
+COPY run-bds.sh /opt/
+RUN chmod +x /opt/run-bds.sh
+
+EXPOSE 19312
+
+ENTRYPOINT [ "/bin/bash", "/opt/run-bds.sh" ]
+
+
+

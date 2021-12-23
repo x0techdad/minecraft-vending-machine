@@ -36,7 +36,7 @@
     <img src="https://static.hiphopdx.com/2015/10/drake-hotline-bling-jacket-moncler.png" height="200">
   </p>
 
-  As of now, the fastest method of deploying an app and its underlying runtime (OS, binaries, dependencies, etc.) is via [containers](https://www.docker.com/resources/what-container). A Docker image has already been packaged up and is publicly available on Docker Hub; the OS is [Ubuntu server](https://hub.docker.com/_/ubuntu/). The project specifies this image during deployment, however, you can also create your own by following the steps in the [image build](#image-build) section.
+  As of now, the fastest method of deploying an app and its underlying runtime (OS, binaries, dependencies, etc.) is via [containers](https://www.docker.com/resources/what-container). A Docker image has already been packaged up and is [publicly available](https://hub.docker.com/repository/docker/cooltechdad/minecraft-bds) on Docker Hub; the base OS is [Ubuntu server](https://hub.docker.com/_/ubuntu/). The project uses this image by default during deployment, however, you can also create and use your own image following the steps in the [image build](#image-build) section.
 
   [insert docker logo]
 
@@ -70,17 +70,22 @@
 
 ## Setup
   ### Environment
-  1. [Clone](https://cloneurl) or [download](https://dlurl) and unzip this project repo to your machine. You'll need to already have or install [git](https://git-scm.com/downloads) to clone. 
+  1. [Clone](https://cloneurl) or [download](https://dlurl) this project repo to your machine. 
+      * If you download, unzip the contents to a local directory. 
+      * To clone, you'll need to already have or install [git](https://git-scm.com/downloads). 
   2. Launch your preferred console and navigate to the 'minecraft-vending-machine' directory 
   3. Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
     * a cross-platform tool to manage Azure resources and connect to cloud services via the command line.
-      * Windows\
+      * Windows
+
         `Invoke-WebRequest -Uri https://azcliprod.blob.core.windows.net/msi/azure-cli-2.31.0.msi -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi`
 
-      * *nix (script runs on any flavor)\
+      * *nix (script runs on any flavor)
+
         `curl -L https://aka.ms/InstallAzureCli | bash` 
 
-      * macOS\
+      * macOS
+
         `brew update && brew install azure-cli`
 
   4. Install the [Bicep CLI](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install#azure-cli)
@@ -90,14 +95,17 @@
   5. [Open a free Azure account and PAYG subcription](https://azure.microsoft.com/en-us/free/)
       * If you are using a pre-existing Azure subscription, [verify](https://docs.microsoft.com/en-us/azure/role-based-access-control/check-access) that you have at least Owner role assigned at the subscription level.
 
-  6. Set the context of your Azure CLI to the correct subscription\
+  6. Set the context of your Azure CLI to the correct subscription
+
       `az account set --subscription <replace with name>`
 
       `az account show`
-  7. Create a [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal#what-is-a-resource-group) in your preferred Azure region, all resource deployments will target this group\
-    `az group create --name rg-cooldad-mvm --location <preferred Azure region e.g. eastus2>`
+  7. Create a [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal#what-is-a-resource-group) in your preferred Azure region, all resource deployments will target this group
+
+      `az group create --name rg-cooldad-mvm --location <preferred Azure region e.g. eastus2>`
+
       * To list all available Azure regions\
-        `az account list-locations`
+          `az account list-locations`
 
   ### Deployment
   1. Pick your preferred cloud infra pattern and deploy it:
@@ -109,21 +117,26 @@
           * [AKS Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#azure-kubernetes-service-contributor-role)
           * [AKS Service RBAC Cluster Admin](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#azure-kubernetes-service-rbac-cluster-admin)
         * Deploy AKS infra resources
+
           `az deployment group create --name deploy-cooldad-mvm-aks --resource-group rg-cooldad-mvm --template-file .\deploy-aks\main.bicep --parameters .\deploy-aks\_main.params.json`
-        * Retrieve important deployment output values, take note of these or save in CLI variables\
+        * Retrieve important deployment output values, take note of these or save in CLI variables
+
           `az deployment group show -g rg-cooldad-mvm -n deploy-cooldad-mvm-aks --query properties.outputs.acr_name.value`
             
           `az deployment group show -g rg-cooldad-mvm -n deploy-cooldad-mvm-aks --query properties.outputs.aks_name.value`
-        * Check that AKS has access to pull images from ACR\
-          `az aks check-acr --acr <acr name>.azurecr.io --name <aks name> --resource-group rg-cooldad-mvm`
-        * Connect to ACR, pull custom image from Docker Hub. If you created your own image replace the image specified `cooltechdad/minecraft-bds:0.5` with your image's details.
+        * Check that AKS has access to pull images from ACR
 
-          `az acr login --name <acr name> --expose-token`
+          `az aks check-acr --acr <acr_name>.azurecr.io --name <aks_name> --resource-group rg-cooldad-mvm`
+        * Connect to ACR, pull custom image from Docker Hub. If you created your own image replace the image specified `cooltechdad/minecraft-bds:0.5` with your image's details. If you want to build your own image, pause here head over to the [image build](#image-build) section, and resume here when you have pushed your own image to Docker Hub.
 
-          `az acr import --name <acr name> --source docker.io/cooltechdad/minecraft-bds:0.5 --image cooltechdad/minecraft-bds:0.5 --force`
-        * Log into the AKS cluster\
-          `az aks get-credentials --resource-group rg-cooldad-mvm --name <aks name>`
-        * Configure Persistent Volume Claims (PVCs)\
+          `az acr login --name <acr_name> --expose-token`
+
+          `az acr import --name <acr_name> --source docker.io/cooltechdad/minecraft-bds:0.5 --image cooltechdad/minecraft-bds:0.5 --force`
+        * Log into the AKS cluster
+
+          `az aks get-credentials --resource-group rg-cooldad-mvm --name <aks_name>`
+        * Configure Persistent Volume Claims (PVCs)
+
           `kubectl apply -f .\azure_files_pvc.yaml`
 
   2. Customize Minecraft server deployment
@@ -131,9 +144,9 @@
           * This file declares the configuration, or spec, of the app we are trying to deploy on k8s. 
       * Specify your ACR's name and the image to use/pull on line 25
         * If you are using the CoolDad image, only plug in your ACR's name\
-        `image: <ACR name>.azurecr.io/cooltechdad/minecraft-bds:0.5`
+        `image: <acr_name>.azurecr.io/cooltechdad/minecraft-bds:0.5`
         * If you are creating your own image, plug in your ACR's name and image details\
-        `image: <ACR name>.azurecr.io/<path/image name:image tag>`
+        `image: <acr_name>.azurecr.io/<namespace/image name:image tag>`
       * Modify [server](https://minecraft.fandom.com/wiki/Server.properties) and gameplay settings for all users:
         ```
           - name: level_name #changing value results in player data loss
@@ -150,27 +163,48 @@
       * Save your changes and close the file
   
   3. Deploy Minecraft server
-      * Log into the AKS cluster\
-        `az aks get-credentials --resource-group rg-cooldad-mvm --name <aks name>`
-      * Launch the container and configure the service\
+      * Log into the AKS cluster
+
+        `az aks get-credentials --resource-group rg-cooldad-mvm --name <aks_name>`
+      * Launch the container and configure the service
+
         `kubectl apply -f .\minecraft-bds.yaml`
-      * Start the log stream to observe for errors\
-      `kubectl logs -f statefulSets/mc-bds-001`
+      * Start the log stream to observe for errors
+
+        `kubectl logs -f statefulSets/ss-mc-bds-001`
+      
+      * If all is good, you should see the following output in your CLI. Were looking at the `Info` logs Minecraft outputs to verify server settings and that the server is listening: `IPv4 supported, port: 19132`.
+
+        <p align="center">
+          <img src="./_img/mvm_deploy_server_success.png" width=500>
+        </p>
+      
       * You should see similar output confirming server settings and port 19132 listening
-      * Run the following command to list the public IP of the service, your clients will need this IP to connect
-      * Congrats, you have successfully deployed a Minecraft Server container, on k8s, in the public cloud! 🎉
-  
-  4. Connect and Play! :video_game:
-      * Load up your favorite [Minecraft client](https://www.minecraft.net/en-us/get-minecraft#) (no Java!)
-      * Click on `Play`, add server via the `Servers` tab
+
+      * View the details of your service's public ingress interface (Load balancer). Look for `LoadBalancer Ingress`; the Public IP listed is the IP that that you will provide to your clients.
+
+        `kubectl describe service lb-mc-bds`
+
+        <p align="center">
+          <img src="./_img/mvm_k8s_service_lb.png"  width=500>
+        </p>
+
+      * 🎉 Congrats, you have successfully deployed a Minecraft Server container, on k8s, in the public cloud, time to connect! 
 
       <p align="center">
-        <img src="./_img/mvm_add_server.png" height="300">
+        <img src="https://media3.giphy.com/media/l49K1yUmz5LjIu0GA/giphy.gif"  width=300>
+      </p>
+  
+
+  4. :video_game: Connect and Play! 
+      * Load up your favorite [Minecraft client](https://www.minecraft.net/en-us/get-minecraft#) (no Java!) and add your server.
+
+      <p align="center">
+        <img src="./_img/mvm_success_animation.gif">
       </p>
 
       * Additional steps are required for Xbox clients, will be added in the next version.
-      * Select server and click on  `Join Server`
-  
+
   5. Cleanup\
       Cloud can get expensive fast, prevent surprise costs by forcibly deleting all resources when your done `az group delete -n rg-cooldad-mvm -y` or stopping all computer resources when not in use.  
 
@@ -189,13 +223,13 @@
     The above requires us to download and install the software, set server properties, then start the server with EULA accepted in a programmatic / fully-automated fashion (no manual or human intervention). A Bash script (run-bds.sh) was developed and packaged into our image to address the above project requirements.
 
     <p align="center">
-      <img src="./_img/mvm_script_eula.png">
+      <img src="./_img/mvm_script_eula.png" width=500>
     </p>
     <p align="center">
-      <img src="./_img/mvm_script_dlbds.png">
+      <img src="./_img/mvm_script_dlbds.png" width=500>
     </p>
     <p align="center">
-      <img src="./_img/mvm_script_props.png">
+      <img src="./_img/mvm_script_server_props.png" width=500>
     </p>
   
   * #### Minecraft server is a stateful application, game data (user and world saved states) is saved on local volumes. Data loss is inevitable due to the ephemeral nature of container storage.
@@ -208,40 +242,94 @@
       * [*nix](https://docs.docker.com/engine/install/)
       * [*macOS](https://docs.docker.com/desktop/mac/install/)
   2. Create a [Docker Hub subscription](https://hub.docker.com/)
-      * required to host your image
-  3. In your CLI navigate to `Docker`
-  4. Build the docker image using the project DockerFile, provide an image name and tag/version number for this build\
-    `docker build --pull --rm -f "DockerFile" -t <image name>:<tag> "."`
+      * Required to host your image.
+      * Make sure to verify your email, otherwise you will not be able to upload your image. 
+  3. In your CLI navigate to the `.\docker` directory
+  4. Build the docker image using the project DockerFile provided. Assign an image name and tag, its recommended you use a build version number for tag. 
+
+      `docker build --pull --rm -f "DockerFile" -t <image name>:<tag> "."`
       
       * Real-world example\
-        `docker build --pull --rm -f "DockerFile" -t cooltechdad/minecraft-bds:0.5 "."`
-  5. Test image by running locally\
-    `docker run --name test --rm -it -e debug=TRUE -e eula=TRUE <image name>:<tag>`
-      * Stop test `docker stop test`
-  6. Tag and Push/upload image to Docker Hub\
-    `docker tag <image name>:<tag> <path>/<image name>:<tag>`\
-    `docker push <path>/<image name>:<tag>`
+        `docker build --pull --rm -f "DockerFile" -t minecraft-bds:0.5 "."`
+  5. Found this cool new integration when building the latest version, container vulnerabliity scanning integrated right into the build pipeline, made possible by [Synk!](https://docs.snyk.io/products/snyk-container/image-scanning-library/docker-hub-image-scanning)
+
+      <p align="center">
+        <img src="./_img/mvm_docker_scan.png" width=500>
+      </p>
+      <p align="center">
+        <img src="./_img/mvm_docker_scan_01.png" width=500>
+      </p>
+      <p align="center">
+        <img src="./_img/mvm_docker_scan_02.png" width=500>
+      </p>
+
+      * To run an assessment on your image and output the results to a local file, specify your image details\
+        `docker scan <image name>:<tag> > .\_vul_scan_out.txt`
+
+      * Real-world example\
+        `docker scan minecraft-bds:0.5 > .\_vul_scan_out.txt`
+
+      * At this point you can address any vulnerabilites found and re-package the image, or accept risk and move on. 
+
+  5. Test image locally. 
+      * Specify required contianer environemnt variables.  
+      * To download the latest version of Minecraft server, specify 'latest', otherwise specify the full version number, eg. 1.18.2.03. 
+
+      `docker run --name test --rm -it -e debug=TRUE -e eula=TRUE -e bds_version=1.18.2.03 <image name>:<tag>`
+
+      * Real-world example\
+        `docker run --name test --rm -it -e debug=TRUE -e eula=TRUE -e bds_version=1.18.2.03 minecraft-bds:0.5`
+      
+      * If all is good, you should see the following output in your CLI. Were looking at the `Info` logs Minecraft outputs.
+
+        <p align="center">
+          <img src="./_img/mvm_docker_test.png" width=500>
+        </p>
+
+      * Stop test\
+        `^C`\
+        `docker stop test`
+  6. Tag and push/upload image to Docker Hub
+
+      `docker tag <image name>:<tag> <GitHub username>/<image name>:<tag>`
+      
+      `docker login`
+
+      `docker push <GitHub username>/<image name>:<tag>`
     
       * Real-world example\
-        `docker tag minecraft-bds:0.5 cooltechdad/minecraft-bds:0.5`\
-        `docker push cooldad/minecraft-bds:0.5`
+        `docker tag minecraft-bds:0.5 cooltechdad/minecraft-bds:0.5`
+
+        `docker push cooltechdad/minecraft-bds:0.5`
+      
+      * After you image is pushed, its public URI will be, please take note of this, you'll need it during deployment: `docker.io/<namespace>/<image name>:<tag>`
+
+      * The latest version of CoolTechDad's image for this project\
+        * URI: `docker.io/cooltechdad/minecraft-bds:0.5`
+        * URL: https://hub.docker.com/repository/docker/cooltechdad/minecraft-bds
+
     
 
 ## Meta
   Maintained by: Sam M. (CoolDad)\
-  Twitter: [@tech_dad_](https://twitter.com/tech_dad_)\
+  Twitter: [@cool_tech_dad_](https://twitter.com/cool_tech_dad_)\
   GitHub: [cool-tech-dad](https://github.com/cool-tech-dad)\
-  Discord: CoolDad#7007
+  Discord: CoolTechDad#7007
 
 ## Contribute
-1. Fork project (<https://github.com/cool-tech-dad/minecraft-vending-machine/fork>)
-2. Create your feature branch `git checkout -b feature/foo_bar`
-3. Commit your changes `git commit -am 'Add some foo_bar'`
-4. Push to the branch `git push origin feature/foo_bar`
+1. Fork project\
+  <https://github.com/cool-tech-dad/minecraft-vending-machine/fork>
+2. Create your feature branch\
+  `git checkout -b feature/foo_bar`
+3. Commit your changes\
+  `git commit -am 'Add some foo_bar'`
+4. Push to the branch\
+  `git push origin feature/foo_bar`
 5. Create a new Pull Request
 
 ## Backlog
   * Change server runtime context to a non-root user
+  * Add readiness probe to service spec 
   * Add backup to the persistent data store (Azure Files)
   * AKS with multiple node pools and Minecraft servers
   * [Minecraft Education](https://education.minecraft.net/en-us/homepage) container image
