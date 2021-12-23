@@ -70,7 +70,7 @@
 
 ## Setup
   ### Environment
-  1. [Clone](https://cloneurl) or [download](https://dlurl) this project repo to your machine. 
+  1. [Clone](https://github.com/cool-tech-dad/minecraft-vending-machine) or [download](https://github.com/cool-tech-dad/minecraft-vending-machine/archive/refs/heads/main.zip) this project repo to your machine. 
       * If you download, unzip the contents to a local directory. 
       * To clone, you'll need to already have or install [git](https://git-scm.com/downloads). 
   2. Launch your preferred console and navigate to the 'minecraft-vending-machine' directory 
