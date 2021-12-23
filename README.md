@@ -114,7 +114,7 @@
   ### Deployment
   1. Pick your preferred cloud infra pattern and deploy it:
       ##### ACI (fast, small, cheap)
-      * Sorry, currently developing the infra code to deploy this scenario check back soon! Move on to the AKS scenario, the deployment has been cost optimized and shouldn't be much to use for a few sessions of game play.   
+      * Sorry, currently developing the infra code to deploy this scenario, check back soon! Check out the AKS pattern below, the deployment has been cost optimized,  shouldnt ding your credits too bad to use for a few sessions of game play. 
 
       ##### AKS (scalable, fully-managed, production-ready)
         * Additional permissions are required to manage the K8S cluster. [Assign]((https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps)) the following Azure RBAC roles to your username at the subscription level:  
