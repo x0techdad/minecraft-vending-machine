@@ -29,9 +29,9 @@
   Stop or delete cloud compute resources when not in use to save on runtime costs. A [Minecraft client](https://www.minecraft.net/en-us/get-minecraft#) is required to connect to the server and play, DO NOT purchase/use the Java client, more on this in the next section.  
 
 ## Overview
-  [Minecraft server](https://minecraft.fandom.com/wiki/Server) is developed in two languages; C++ ([Bedrock](https://minecraft.fandom.com/wiki/Bedrock_Edition)) and [Java](https://minecraft.fandom.com/wiki/Server) and packaged as a single executable (.exe). Due to licensing, we cannot distribute the software, meaning we'll need to download and install the binaries each a new server is deployed. 
+  [Minecraft server](https://minecraft.fandom.com/wiki/Server) is developed in two languages; C++ ([Bedrock](https://minecraft.fandom.com/wiki/Bedrock_Edition)) and [Java](https://minecraft.fandom.com/wiki/Server) and packaged as a single executable (.exe). Due to licensing, we cannot distribute the software, meaning we'll need to download and install the binaries each time a new server is deployed. 
 
-  We will be using the Bedrock edition for better cross-platform gameplay, and.....uhhhhhh....yeaaaaah, anything but Java. 
+  We will be using the Bedrock edition for better cross-platform gameplay, and...uhh...yeaaah, anything but Java. 
   <p align="center">
     <img src="https://static.hiphopdx.com/2015/10/drake-hotline-bling-jacket-moncler.png" height="200">
   </p>
