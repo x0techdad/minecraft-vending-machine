@@ -7,9 +7,9 @@
 </p>
 
 ## Intro
-  Hello. This project was initially developed out of a need to quickly deploy and re-deploy my own [Minecraft](https://minecraft.fandom.com/wiki/Minecraft_Wiki) servers, in the cloud, for cheap*. The servers are used in various scenarios; work projects, family gaming, kid coding camp sessions, and so dad can nerd out with his friends. :nerd_face:
+  Hello. This project was initially developed out of a need to quickly deploy and re-deploy my own [Minecraft](https://minecraft.fandom.com/wiki/Minecraft_Wiki) servers, in the cloud, as cheap as possible*. The servers are then used in various scenarios; work projects, family gaming, kid coding camp sessions, and so dad can nerd out with his friends. :nerd_face:
   
-  The project is also being used to demo, teach, learn, and play with the cool cloud tech listed in the [tech](#tech) section by everyday folks. 
+  The project is also being used to demo, teach, learn, and play with the cool cloud tech listed in the [tech](#tech) section. 
   
   Welcome! 
   * If you want a lot more project background and technical overview, continue to the next section.
