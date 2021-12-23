@@ -1,6 +1,6 @@
 # Minecraft Vending Machine
 <p align="center">
-  <img src="./_img/mvm_logo_v1.0.png" width="500"></br>
+  <img src="./_img/mvm_logo.gif" width="600"></br>
   <a href="#intro">Intro</a> |
   <a href="#overview">Overview</a> |
   <a href="#setup">Setup</a> 
@@ -23,7 +23,7 @@
     * Share feedback and comments via listed socials
     * Submit issues, bugs, feature requests via [GitHub](https://github.com/cool-tech-dad/minecraft-vending-machine/issues)
   
-  * Get help at [CoolDad.Cloud Discord](https://discord.gg/aCnzN2QsQE) 
+  * Get help at the [CoolDad.Cloud Discord](https://discord.gg/aCnzN2QsQE) 
 
   ### * Only the first 30 days or $200 of cloud consumption are free. 💰
   Stop or delete cloud compute resources when not in use to save on runtime costs. A [Minecraft client](https://www.minecraft.net/en-us/get-minecraft#) is required to connect to the server and play, DO NOT purchase/use the Java client, more on this in the next section.  
@@ -38,7 +38,9 @@
 
   As of now, the fastest method of deploying an app and its underlying runtime (OS, binaries, dependencies, etc.) is via [containers](https://www.docker.com/resources/what-container). A Docker image has already been packaged up and is [publicly available](https://hub.docker.com/repository/docker/cooltechdad/minecraft-bds) on Docker Hub; the base OS is [Ubuntu server](https://hub.docker.com/_/ubuntu/). The project uses this image by default during deployment, however, you can also create and use your own image following the steps in the [image build](#image-build) section.
 
-  [insert docker logo]
+  <p align="center">
+    <img src="./_img/mvm_docker_logo.png" width="500"></br>
+  </p>
 
   Once we have our image, we need to load and launch it on some compute, attach persistent storage and a public network interface (Public IP), so our Minecraft clients can connect from anywhere :milky_way: via the Internet. That's where public cloud platforms, like Azure, come in very handy. The ease of use, speed of deployment, and scale capabilities of these platforms unlock very interesting possibilities for anyone willing to learn and use them. 
 
@@ -57,23 +59,25 @@
 
   As of now, the project only supports Azure for compute and storage, we are looking to add support for other platforms in future versions.
 
-  [Insert Azure logo]
+  <p align="center">
+    <img src="./_img/mvm_azure_logo.png" width="500"></br>
+  </p>
 
 ## Tech
   * Minecraft BDS 1.18.2.03
   * Ubuntu server 20.04
-  * Docker version? 
-  * Kubernetes (k8s) version?
-    * [Azure Container Instance](https://docs.microsoft.com/en-us/azure/container-instances/)
-    * [Azure Kubernetes Service](https://docs.microsoft.com/en-us/azure/aks/)
-  * List other tech used in solution
+  * Docker  20.10
+  * Kubernetes (K8S) 1.20.9
+    * [Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/)
+    * [Azure Container Instance (ACI)](https://docs.microsoft.com/en-us/azure/container-instances/)
+
 
 ## Setup
   ### Environment
   1. [Clone](https://github.com/cool-tech-dad/minecraft-vending-machine) or [download](https://github.com/cool-tech-dad/minecraft-vending-machine/archive/refs/heads/main.zip) this project repo to your machine. 
       * If you download, unzip the contents to a local directory. 
       * To clone, you'll need to already have or install [git](https://git-scm.com/downloads). 
-  2. Launch your preferred console and navigate to the 'minecraft-vending-machine' directory 
+  2. Launch your preferred console and navigate to the `.\minecraft-vending-machine` directory 
   3. Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
     * a cross-platform tool to manage Azure resources and connect to cloud services via the command line.
       * Windows
@@ -140,7 +144,7 @@
           `kubectl apply -f .\azure_files_pvc.yaml`
 
   2. Customize Minecraft server deployment
-      *  Open file ```.\service\minecraft-bds.yml``` with your preffered text editor.
+      *  Open file `.\minecraft-bds.yml` with your preffered text editor.
           * This file declares the configuration, or spec, of the app we are trying to deploy on k8s. 
       * Specify your ACR's name and the image to use/pull on line 25
         * If you are using the CoolDad image, only plug in your ACR's name\
@@ -208,8 +212,12 @@
   5. Cleanup\
       Cloud can get expensive fast, prevent surprise costs by forcibly deleting all resources when your done `az group delete -n rg-cooldad-mvm -y` or stopping all computer resources when not in use.  
 
+      <p align="center">
+        <img src="./_img/it_was_all_a_dream.png" width=500>
+      </p>
+
   ### Additional scenarios
-  * AKS: Add additional node pool, deploy multiple Minecraft servers on a single AKS. Included in the next version.
+  * AKS: Add additional node pool, deploy multiple Minecraft servers on a single cluster. Included in the next version.
   * ACI: Deployment guide and code will be included in the next version.
 
   ### T-shooting
@@ -247,6 +255,8 @@
   3. In your CLI navigate to the `.\docker` directory
   4. Build the docker image using the project DockerFile provided. Assign an image name and tag, its recommended you use a build version number for tag. 
 
+      `docker login`
+
       `docker build --pull --rm -f "DockerFile" -t <image name>:<tag> "."`
       
       * Real-world example\
@@ -273,12 +283,12 @@
 
   5. Test image locally. 
       * Specify required contianer environemnt variables.  
-      * To download the latest version of Minecraft server, specify 'latest', otherwise specify the full version number, eg. 1.18.2.03. 
+      * To download the latest version of Minecraft server, specify 'latest', otherwise specify the full version number, eg. `1.18.2.03`. 
 
-      `docker run --name test --rm -it -e debug=TRUE -e eula=TRUE -e bds_version=1.18.2.03 <image name>:<tag>`
+        `docker run --name test --rm -it -e debug=TRUE -e eula=TRUE -e bds_version=1.18.2.03 <image name>:<tag>`
 
       * Real-world example\
-        `docker run --name test --rm -it -e debug=TRUE -e eula=TRUE -e bds_version=1.18.2.03 minecraft-bds:0.5`
+          `docker run --name test --rm -it -e debug=TRUE -e eula=TRUE -e bds_version=1.18.2.03 minecraft-bds:0.5`
       
       * If all is good, you should see the following output in your CLI. Were looking at the `Info` logs Minecraft outputs.
 
@@ -291,11 +301,9 @@
         `docker stop test`
   6. Tag and push/upload image to Docker Hub
 
-      `docker tag <image name>:<tag> <GitHub username>/<image name>:<tag>`
-      
-      `docker login`
+      `docker tag <image name>:<tag> <namespace>/<image name>:<tag>`
 
-      `docker push <GitHub username>/<image name>:<tag>`
+      `docker push <namespace>/<image name>:<tag>`
     
       * Real-world example\
         `docker tag minecraft-bds:0.5 cooltechdad/minecraft-bds:0.5`
@@ -304,9 +312,9 @@
       
       * After you image is pushed, its public URI will be, please take note of this, you'll need it during deployment: `docker.io/<namespace>/<image name>:<tag>`
 
-      * The latest version of CoolTechDad's image for this project\
-        * URI: `docker.io/cooltechdad/minecraft-bds:0.5`
-        * URL: https://hub.docker.com/repository/docker/cooltechdad/minecraft-bds
+      * The latest version of CoolTechDad's image for this project
+        * Source `docker.io/cooltechdad/minecraft-bds:0.5`
+        * URL https://hub.docker.com/repository/docker/cooltechdad/minecraft-bds
 
     
 
@@ -335,6 +343,6 @@
   * [Minecraft Education](https://education.minecraft.net/en-us/homepage) container image
 
 ## Change Log
-0.5.0 Initial beta release
+0.5.0 Initial beta
 
 [Distributed under the GNU V3 license](https://gnu.org/licenses)
