@@ -23,7 +23,7 @@
     * Share feedback and comments via listed socials
     * Submit issues, bugs, feature requests via [GitHub](https://github.com/cool-tech-dad/minecraft-vending-machine/issues)
   
-  * Get help at the [CoolDad.Cloud Discord](https://discord.gg/aCnzN2QsQE) 
+  * Get help at the [CoolTechDad.Cloud Discord](https://discord.gg/aCnzN2QsQE) 
 
   ### * Only the first 30 days or $200 of cloud consumption are free. 💰
   Stop or delete cloud compute resources when not in use to save on runtime costs. A [Minecraft client](https://www.minecraft.net/en-us/get-minecraft#) is required to connect to the server and play, DO NOT purchase/use the Java client, more on this in the next section.  
@@ -114,7 +114,7 @@
   ### Deployment
   1. Pick your preferred cloud infra pattern and deploy it:
       ##### ACI (fast, small, cheap)
-      * Sorry, currently developing the infra code to deploy this scenario check back soon! Move on to the AKS scenario, the deployment has been cost optimized and shouldn't be much to use for a few sessions of game play.   
+      * Sorry, currently developing the infra code to deploy this scenario, check back soon! Check out the AKS pattern below, the deployment has been cost optimized,  shouldnt ding your credits too bad to use for a few sessions of game play. 
 
       ##### AKS (scalable, fully-managed, production-ready)
         * Additional permissions are required to manage the K8S cluster. [Assign]((https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps)) the following Azure RBAC roles to your username at the subscription level:  
@@ -135,7 +135,7 @@
         * Connect to ACR, pull custom image from Docker Hub. If you created your own image replace the image specified `cooltechdad/minecraft-bds:0.5` with your image's details. If you want to build your own image, pause here head over to the [image build](#image-build) section, and resume here when you have pushed your own image to Docker Hub.
 
           `az acr login --name <acr_name> --expose-token`
-
+          
           `az acr import --name <acr_name> --source docker.io/cooltechdad/minecraft-bds:0.5 --image cooltechdad/minecraft-bds:0.5 --force`
         * Log into the AKS cluster
 
@@ -148,7 +148,7 @@
       *  Open file `.\minecraft-bds.yml` with your preffered text editor.
           * This file declares the configuration, or spec, of the app we are trying to deploy on k8s. 
       * Specify your ACR's name and the image to use/pull on line 25
-        * If you are using the CoolDad image, only plug in your ACR's name\
+        * If you are using the CoolTechDad image, only plug in your ACR's name\
         `image: <acr_name>.azurecr.io/cooltechdad/minecraft-bds:0.5`
         * If you are creating your own image, plug in your ACR's name and image details\
         `image: <acr_name>.azurecr.io/<namespace/image name:image tag>`
@@ -183,8 +183,6 @@
         <p align="center">
           <img src="./_img/mvm_deploy_server_success.png" width=500>
         </p>
-      
-      * You should see similar output confirming server settings and port 19132 listening
 
       * View the details of your service's public ingress interface (Load balancer). Look for `LoadBalancer Ingress`; the Public IP listed is the IP that that you will provide to your clients.
 
@@ -228,21 +226,77 @@
       
   ### Lessons learned
   Below is a list of gotchas we ran into when running Minecraft server using a container-based approach, and how we solved for each: 
-  * #### We are restricted from distributing/including the server software in our image, the server experience is customized (creative vs. survival mode) by modifying the desired [server properties](https://minecraft.fandom.com/wiki/Server.properties) on a local config file, and the EULA must be accepted when the server is started. 
-    The above requires us to download and install the software, set server properties, then start the server with EULA accepted in a programmatic / fully-automated fashion (no manual or human intervention). A Bash script (run-bds.sh) was developed and packaged into our image to address the above project requirements.
+  * #### We are restricted from distributing/including the server software in our Docker image. Minecraft server [properties](https://minecraft.fandom.com/wiki/Server.properties) (eg. creative vs. survival mode) are set on a local config file. The EULA must be accepted before the server is started.
+    The above requires us to download and install the server software, modify server properties, accept the EULA, then start the server in a programmatic / fully-automated fashion (no manual human intervention). The following was implemented to meet these requirements:
+    
+    * `.\docker\run-bds.sh` was developed to execute required tasks via CLI
 
-    <p align="center">
-      <img src="./_img/mvm_script_eula.png" width=500>
-    </p>
-    <p align="center">
-      <img src="./_img/mvm_script_dlbds.png" width=500>
-    </p>
-    <p align="center">
-      <img src="./_img/mvm_script_server_props.png" width=500>
-    </p>
+      * Accept EULA 
+        <p align="center">
+          <img src="./_img/mvm_script_eula.png" width=500>
+        </p>
+          
+      * Download Minecraft server software and install
+        <p align="center">
+          <img src="./_img/mvm_script_dlbds.png" width=500>
+        </p>
+      * Modify server properties
+        <p align="center">
+          <img src="./_img/mvm_script_server_props.png" width=500>
+        </p>
+      * Start server
+        <p align="center">
+          <img src="./_img/mvm_script_start_server.png" width=500>
+        </p>
+    * `.\docker\DockerFile` was developed to copy script into container image and set as a startup script during image build 
+      
+      ` COPY run-bds.sh /opt/`\
+      ...\
+      `ENTRYPOINT [ "/bin/bash", "/opt/run-bds.sh" ]`
+
   
-  * #### Minecraft server is a stateful application, game data (user and world saved states) is saved on local volumes. Data loss is inevitable due to the ephemeral nature of container storage.
-    The above requires us to persist data outside of the running container. Persistent volumes (PVs) are created and presented to the running container, [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction) shares provide the underlying data store for our PVs.      
+  * #### Minecraft server is a stateful app, game data (user and world saved states) is saved on mounted volumes. Data loss is inevitable if stored locally due to the ephemeral nature of container storage.
+    The above requires us to provide stable, persistent data storage to our app via K8S Persistent Volumes (PVs). Also, to minimize management overhead, we need the system to dynamically manage this storage for us. 
+    
+    The following configurations are defined in the AKS deployment to meet these requirements:
+      * A Persistent Volume Claim (PVC) that dynamically provisions Persistent Volumes (PVs) on the [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction) service is defined in `.\azure_files_pvc.yaml`. 
+          ```
+          kind: PersistentVolumeClaim
+            metadata:
+              name: pvc-001
+            spec:
+              storageClassName: sc-azure-files
+          ```
+        Create this PVC on K8S by applying the spec:
+          
+          `kubectl apply -f .\azure_files_pvc.yaml`
+
+      * The above PVC is referenced in the app spec, `.\minecraft-bds-yaml`, used to launch our image: 
+
+          ```
+            volumes:
+            - name: pv-001
+                persistentVolumeClaim:
+                  claimName:  pvc-001
+          ``` 
+          ```
+          volumeMounts:
+            - name: pv-001
+              mountPath: /data
+          ```     
+      * A [StatesfulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/) desired state is defined for our app, instead of the typically used [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) app kind.
+        ```
+        apiVersion: apps/v1
+        kind: StatefulSet
+        ```
+      
+        A StatefulSet configuration ensures that the same dynamically created PV is mapped to the K8S [pod](https://kubernetes.io/docs/concepts/workloads/pods/) running our app after system failures, reboots, or maintenance.
+      
+      * Deploy the stateful desired state by using the provided app spec:
+      
+        `kubectl apply -f .\minecraft-bds.yaml`
+        
+        K8S will first attempt to dynamically create a volume. If this fails, container creation fails. If it is successful, the PV will be mounted, and container creation will resume.
 
   ### Image Build
   Follow these steps if you'd like to build and publish your container image (not as hard as it sounds).
@@ -254,7 +308,7 @@
       * Required to host your image.
       * Make sure to verify your email, otherwise you will not be able to upload your image. 
   3. In your CLI navigate to the `.\docker` directory
-  4. Build the docker image using the project DockerFile provided. Assign an image name and tag, its recommended you use a build version number for tag. 
+  4. Build the docker image using `.\docker\DockerFile`. Assign an image name and tag, its recommended you use a build version number for tag. 
 
       `docker login`
 
@@ -320,10 +374,11 @@
     
 
 ## Meta
-  Maintained by: Sam M. (CoolDad)\
-  Twitter: [@cool_tech_dad_](https://twitter.com/cool_tech_dad_)\
-  GitHub: [cool-tech-dad](https://github.com/cool-tech-dad)\
-  Discord: CoolTechDad#7007
+Maintained by: 
+- CoolTechDad\
+    Twitter: [@cool_tech_dad_](https://twitter.com/cool_tech_dad_)\
+    GitHub: [cool-tech-dad](https://github.com/cool-tech-dad)\
+    Discord: CoolTechDad#7007
 
 ## Contribute
 1. Fork project\
@@ -337,13 +392,18 @@
 5. Create a new Pull Request
 
 ## Backlog
-  * Change server runtime context to a non-root user
-  * Add readiness probe to service spec 
-  * Add backup to the persistent data store (Azure Files)
-  * AKS with multiple node pools and Minecraft servers
-  * [Minecraft Education](https://education.minecraft.net/en-us/homepage) container image
+- [ ] Change server runtime context to a non-root user
+- [ ] Add readiness probe to service spec 
+- [ ] Add backup to the persistent data store (Azure Files)
+- [ ] AKS with multiple node pools and Minecraft servers
+- [ ] [Minecraft Education](https://education.minecraft.net/en-us/homepage) container image
 
 ## Change Log
 0.5.0 Initial beta
 
 [Distributed under the GNU V3 license](https://gnu.org/licenses)
+
+## Sources
+* Script : https://github.com/itzg/docker-minecraft-bedrock-server/blob/master/bedrock-entry.sh
+
+
