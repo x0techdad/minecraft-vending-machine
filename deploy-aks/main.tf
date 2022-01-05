@@ -32,4 +32,6 @@ resource "azurerm_kubernetes_cluster" "useast-minecraft-aks" {
    } 
 
 
-} 
+   }
+
+
