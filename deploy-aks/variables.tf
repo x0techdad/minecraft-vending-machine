@@ -17,3 +17,14 @@ variable "kube_version" {
 variable "admin_username" {
   description = "Please enter the usernameyou would like for the for the AKS cluster"
 }
+
+variable "minecraftaks_vnet_name" {
+  default = "useast-minecraftaks-vnet"
+}
+
+variable "minecraftaks_subnet_name" {
+  default = "useast-minecraftaks-subnet"
+}
+variable "ssh_public_key" {
+  default = "id_rsa.pub"
+}
