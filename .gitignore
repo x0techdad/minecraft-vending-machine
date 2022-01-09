@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Convert to LF line endings on checkout.
+*.sh text eol=lf
+
 # User-specific files
 *.rsuser
 *.suo
