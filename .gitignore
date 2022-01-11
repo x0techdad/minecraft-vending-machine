@@ -58,3 +58,4 @@ terraform.rc
 .pub
 *.pub.*
 *.pub
+id_rsa
