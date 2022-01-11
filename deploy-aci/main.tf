@@ -14,6 +14,7 @@ resource "azurerm_storage_account" "useast-aci-storage" {
   location = azurerm_resource_group.useast-minecraftaci-rg.location
   account_tier = "Premium"
   account_replication_type = "LRS"
+  account_kind = "FileStorage"
 }
 
 resource "azurerm_storage_share" "useast-aci-share" {
