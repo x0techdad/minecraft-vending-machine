@@ -22,7 +22,7 @@ spec:
             claimName:  pvc-001
       containers:
       - name: minecraft-bds-001
-        image: acrcooldadmvmaksic27d5xxejuki.azurecr.io/cooltechdad/minecraft-bds:0.5
+        image: docker.io/cooltechdad/minecraft-bds:0.5
         imagePullPolicy: Always
         env:
           - name: debug
@@ -51,6 +51,7 @@ spec:
             protocol: UDP
             name: udp-bds
 ---
+
 apiVersion: v1
 kind: Service
 metadata:

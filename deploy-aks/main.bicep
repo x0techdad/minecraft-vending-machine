@@ -230,7 +230,7 @@ var user_pool_sizing = {
     minCount: auto_scale ? 1 : json('null')
   }
   'standard' : {
-    vmSize: 'Standard_D2s_v3'
+    vmSize: 'Standard_B4ms_v3'
     maxPods: 30
     minCount: auto_scale ? 1 : json('null')
   }

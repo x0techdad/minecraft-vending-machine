@@ -57,7 +57,7 @@ resource "azurerm_kubernetes_cluster" "useast-minecraft-aks" {
    default_node_pool {
      name = "default"
      node_count = 2
-     vm_size = "Standard_DS2_v5"
+     vm_size = "standard_b4ms"
      os_disk_size_gb = "30"
      vnet_subnet_id = azurerm_subnet.useast-aks-subnet.id
    } 

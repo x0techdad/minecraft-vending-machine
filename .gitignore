@@ -54,3 +54,7 @@ crash.*.log
 .terraformrc
 terraform.rc
 
+# Ignore Pub Files
+.pub
+*.pub.*
+*.pub
