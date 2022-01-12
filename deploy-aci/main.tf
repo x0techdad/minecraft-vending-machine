@@ -1,12 +1,21 @@
+#########################################################
+### Defines Azure Resource Manager Terraform Provider ###
+#########################################################
 provider "azurerm" {
     version = "2.9.0"
     features {}
 }
-
+#########################################################
+######### Creates Azure Resource Group ##################
+#########################################################
 resource "azurerm_resource_group" "useast-minecraftaci-rg" {
   name = var.resource_group_name
   location = var.resource_location
 }
+
+#########################################################
+######### Creates Azure Storage Account #################
+#########################################################
 
 resource "azurerm_storage_account" "useast-aci-storage" {
   name = "useastacistorage"
