@@ -15,11 +15,13 @@ resource "azurerm_storage_account" "useast-aci-storage" {
   account_tier = "Premium"
   account_replication_type = "LRS"
   account_kind = "FileStorage"
+
 }
 
 resource "azurerm_storage_share" "useast-aci-share" {
   name = "acishare"
   storage_account_name = azurerm_storage_account.useast-aci-storage.name
+  quota = 100
 }
 
 
