@@ -55,8 +55,8 @@ crash.*.log
 terraform.rc
 
 # Ignore HCL configuration files
-*.HCL
 *.lock.hcl
+*.terraform
 
 # Ignore Pub Files
 .pub
