@@ -1,8 +1,13 @@
+#########################################################
+### Defines Azure Resource Manager Terraform Provider ###
+#########################################################
 provider "azurerm" {
     version = "2.9.0"
     features {}
 }
-
+#########################################################
+##### Defines the Random string generator Provider ######
+#########################################################
 terraform {
   required_providers {
     random = {
@@ -12,17 +17,26 @@ terraform {
   }
 }
 
+#########################################################
+##### Defines the Random string generator Provider ######
+#########################################################
 resource "random_string" "dns_prefix" {
   length  = 8
   special = false
   upper   = false
 }
 
+#########################################################
+######### Creates Azure Resource Group ##################
+#########################################################
 resource "azurerm_resource_group" "useast-minecraftaks-rg" {
   name = var.resource_group_name
   location = var.resource_location
 }
 
+#########################################################
+######### Creates Azure Virtual Network #################
+#########################################################
 resource "azurerm_virtual_network" "useast-aks-vnet" {
     name = var.minecraftaks_vnet_name
     address_space = ["192.168.0.0/16"]
@@ -31,6 +45,9 @@ resource "azurerm_virtual_network" "useast-aks-vnet" {
 }
 
 
+#########################################################
+######### Creates Azure Subnet tied to VNET #############
+#########################################################
 resource "azurerm_subnet" "useast-aks-subnet" {
     name                 = var.minecraftaks_subnet_name
     resource_group_name  = azurerm_resource_group.useast-minecraftaks-rg.name
@@ -39,7 +56,11 @@ resource "azurerm_subnet" "useast-aks-subnet" {
 }
 
 
-
+#########################################################
+######### Creates Azure Kubernetes Cluster ##############
+######### 1 Minecraft Container is Created ##############
+########## 2 CPU and 8 GB Memory Allocated ##############
+#########################################################
 resource "azurerm_kubernetes_cluster" "useast-minecraft-aks" {
   name = var.useast-minecraft-aksname
   location = azurerm_resource_group.useast-minecraftaks-rg.location
