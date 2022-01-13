@@ -27,13 +27,20 @@ resource "azurerm_storage_account" "useast-aci-storage" {
 
 }
 
+#########################################################
+######### Creates 100GB Azure File Share#################
+#########################################################
 resource "azurerm_storage_share" "useast-aci-share" {
   name = "acishare"
   storage_account_name = azurerm_storage_account.useast-aci-storage.name
   quota = 100
 }
 
-
+#########################################################
+######### Creates Azure Container Instance Group ########
+########## 1 Minecraft Container is Created #############
+########### 1 CPU and 2 GB Memory Allocated #############
+#########################################################
 resource "azurerm_container_group" "useast-minecraftaci-cg" {
   name = "useast-minecraft-aci"
   location = azurerm_resource_group.useast-minecraftaci-rg.location
@@ -78,6 +85,11 @@ resource "azurerm_container_group" "useast-minecraftaci-cg" {
     azurerm_storage_account.useast-aci-storage,
     azurerm_storage_share.useast-aci-share
   ]
-  
-
+}
+#########################################################
+########### Creates some useful outputs #################
+###### this provides ease of use for connectivity #######
+#########################################################
+output "container_ip_address" {
+  value = azurerm_container_group.useast-minecraftaci-cg.ip_address
 }
