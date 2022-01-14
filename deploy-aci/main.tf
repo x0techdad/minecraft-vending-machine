@@ -9,7 +9,7 @@ provider "azurerm" {
 ##### Defines the Random string generator Provider ######
 #########################################################
 resource "random_id" "prefix" {
-  byte_length = 8 
+  byte_length = 5 
 }
 #########################################################
 ######### Creates Azure Resource Group ##################
@@ -24,7 +24,7 @@ resource "azurerm_resource_group" "rg-cooldad-mvm" {
 #########################################################
 
 resource "azurerm_storage_account" "aci-storage" {
-  name = "sta${lower(random_id.prefix.hex)}"
+  name = "mvmsta${lower(random_id.prefix.hex)}"
   resource_group_name = azurerm_resource_group.rg-cooldad-mvm.name
   location = azurerm_resource_group.rg-cooldad-mvm.location
   account_tier = "Premium"
@@ -48,7 +48,7 @@ resource "azurerm_storage_share" "aci-share" {
 ########### 1 CPU and 2 GB Memory Allocated #############
 #########################################################
 resource "azurerm_container_group" "cooldad-mvm-cg" {
-  name = "aci${lower(random_id.prefix.hex)}"
+  name = "mvmaci${lower(random_id.prefix.hex)}"
   location = azurerm_resource_group.rg-cooldad-mvm.location
   resource_group_name = azurerm_resource_group.rg-cooldad-mvm.name
   ip_address_type = "public"
