@@ -6,21 +6,29 @@ provider "azurerm" {
     features {}
 }
 #########################################################
+##### Defines the Random string generator Provider ######
+#########################################################
+resource "random_string" "prefix" {
+  length  = 8
+  special = false
+  upper   = false
+}
+#########################################################
 ######### Creates Azure Resource Group ##################
 #########################################################
-resource "azurerm_resource_group" "useast-minecraftaci-rg" {
-  name = var.resource_group_name
-  location = var.resource_location
+resource "azurerm_resource_group" "rg-cooldad-mvm" {
+  name = "rg-cooldad-mvm"
+  location = "var.resource_location"
 }
 
 #########################################################
 ######### Creates Azure Storage Account #################
 #########################################################
 
-resource "azurerm_storage_account" "useast-aci-storage" {
-  name = "useastacistorage"
-  resource_group_name = azurerm_resource_group.useast-minecraftaci-rg.name
-  location = azurerm_resource_group.useast-minecraftaci-rg.location
+resource "azurerm_storage_account" "aci-storage" {
+  name = "sta" + random_string.prefix + "001"
+  resource_group_name = azurerm_resource_group.rg-cooldad-mvm.name
+  location = azurerm_resource_group.rg-cooldad-mvm.location
   account_tier = "Premium"
   account_replication_type = "LRS"
   account_kind = "FileStorage"
@@ -30,9 +38,9 @@ resource "azurerm_storage_account" "useast-aci-storage" {
 #########################################################
 ######### Creates 100GB Azure File Share#################
 #########################################################
-resource "azurerm_storage_share" "useast-aci-share" {
-  name = "acishare"
-  storage_account_name = azurerm_storage_account.useast-aci-storage.name
+resource "azurerm_storage_share" "aci-share" {
+  name = "pvc-mc-001"
+  storage_account_name = azurerm_storage_account.aci-storage.name
   quota = 100
 }
 
@@ -42,11 +50,11 @@ resource "azurerm_storage_share" "useast-aci-share" {
 ########### 1 CPU and 2 GB Memory Allocated #############
 #########################################################
 resource "azurerm_container_group" "useast-minecraftaci-cg" {
-  name = "useast-minecraft-aci"
-  location = azurerm_resource_group.useast-minecraftaci-rg.location
-  resource_group_name = azurerm_resource_group.useast-minecraftaci-rg.name
+  name = ["aci-"+ random_string.prefix + "-001"]
+  location = azurerm_resource_group.rg-cooldad-mvm.location
+  resource_group_name = azurerm_resource_group.rg-cooldad-mvm.name
   ip_address_type = "public"
-  dns_name_label = "tedstestaci"
+  dns_name_label = random_string.prefix
   os_type = "Linux"
   
   container {
@@ -75,9 +83,9 @@ resource "azurerm_container_group" "useast-minecraftaci-cg" {
     volume {
       name = "pv001"
       mount_path = "/data"
-      storage_account_name = azurerm_storage_account.useast-aci-storage.name
-      storage_account_key = azurerm_storage_account.useast-aci-storage.primary_access_key
-      share_name = azurerm_storage_share.useast-aci-share.name
+      storage_account_name = azurerm_storage_account.aci-storage.name
+      storage_account_key = azurerm_storage_account.aci-storage.primary_access_key
+      share_name = azurerm_storage_share.aci-share.name
     }
   }
   
