@@ -8,17 +8,15 @@ provider "azurerm" {
 #########################################################
 ##### Defines the Random string generator Provider ######
 #########################################################
-resource "random_string" "prefix" {
-  length  = 8
-  special = false
-  upper   = false
+resource "random_id" "prefix" {
+  byte_length = 8 
 }
 #########################################################
 ######### Creates Azure Resource Group ##################
 #########################################################
 resource "azurerm_resource_group" "rg-cooldad-mvm" {
   name = "rg-cooldad-mvm"
-  location = "var.resource_location"
+  location = var.resource_location
 }
 
 #########################################################
@@ -26,7 +24,7 @@ resource "azurerm_resource_group" "rg-cooldad-mvm" {
 #########################################################
 
 resource "azurerm_storage_account" "aci-storage" {
-  name = "sta" + random_string.prefix + "001"
+  name = "sta${lower(random_id.prefix.hex)}"
   resource_group_name = azurerm_resource_group.rg-cooldad-mvm.name
   location = azurerm_resource_group.rg-cooldad-mvm.location
   account_tier = "Premium"
@@ -49,17 +47,17 @@ resource "azurerm_storage_share" "aci-share" {
 ########## 1 Minecraft Container is Created #############
 ########### 1 CPU and 2 GB Memory Allocated #############
 #########################################################
-resource "azurerm_container_group" "useast-minecraftaci-cg" {
-  name = ["aci-"+ random_string.prefix + "-001"]
+resource "azurerm_container_group" "cooldad-mvm-cg" {
+  name = "aci${lower(random_id.prefix.hex)}"
   location = azurerm_resource_group.rg-cooldad-mvm.location
   resource_group_name = azurerm_resource_group.rg-cooldad-mvm.name
   ip_address_type = "public"
-  dns_name_label = random_string.prefix
+  dns_name_label = "aci${lower(random_id.prefix.hex)}"
   os_type = "Linux"
   
   container {
     name = "minecraft"
-    image = "docker.io/cooltechdad/minecraft-bds:0.5"
+    image = "docker.io/cooltechdad/minecraft-bds:0.5" 
     cpu = "1"
     memory = "2"
 
@@ -90,8 +88,8 @@ resource "azurerm_container_group" "useast-minecraftaci-cg" {
   }
   
   depends_on = [
-    azurerm_storage_account.useast-aci-storage,
-    azurerm_storage_share.useast-aci-share
+    azurerm_storage_account.aci-storage,
+    azurerm_storage_share.aci-share
   ]
 }
 #########################################################
@@ -99,5 +97,8 @@ resource "azurerm_container_group" "useast-minecraftaci-cg" {
 ###### this provides ease of use for connectivity #######
 #########################################################
 output "container_ip_address" {
-  value = azurerm_container_group.useast-minecraftaci-cg.ip_address
+  value = azurerm_container_group.cooldad-mvm-cg.ip_address
+}
+output "contain_dns_name" {
+  value = azurerm_container_group.cooldad-mvm-cg.dns_name_label
 }
