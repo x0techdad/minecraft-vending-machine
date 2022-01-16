@@ -92,5 +92,7 @@ resource "azurerm_kubernetes_cluster" "mvm-aks" {
 
 }
 
-
+output "aks_name" {
+  value = azurerm_kubernetes_cluster.mvm-aks.name
+}
 
