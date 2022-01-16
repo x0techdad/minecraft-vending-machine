@@ -19,9 +19,19 @@ terraform {
 #########################################################
 ##### Defines the Random string generator Provider ######
 #########################################################
+resource "random_string" "prefix" {
+  length           = 6
+  special          = false 
+}
+
+#########################################################
+##### Defines the Random string generator Provider ######
+#########################################################
 resource "random_id" "prefix" {
   byte_length = 5 
 }
+
+
 
 #########################################################
 ######### Creates Azure Resource Group ##################
@@ -58,11 +68,11 @@ resource "azurerm_subnet" "mvm-aks-subnet" {
 ######### 1 Minecraft Container is Created ##############
 ########## 2 CPU and 8 GB Memory Allocated ##############
 #########################################################
-resource "azurerm_kubernetes_cluster" "useast-minecraft-aks" {
-  name = "mvmaks${lower(random_id.prefix.hex)}"
+resource "azurerm_kubernetes_cluster" "mvm-aks" {
+  name = "mvmaks${lower(random_string.prefix.result)}"
   location = azurerm_resource_group.rg-cooldad-mvm.location
   resource_group_name  = azurerm_resource_group.rg-cooldad-mvm.name
-  dns_prefix = "mvmaks${lower(random_id.prefix.hex)}dns"
+  dns_prefix = "mvmaks${lower(random_string.prefix.result)}dns"
   kubernetes_version = var.kube_version
   
   linux_profile {
