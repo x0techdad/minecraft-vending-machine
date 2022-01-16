@@ -1,4 +1,4 @@
-#########################################################
+c#########################################################
 ### Defines Azure Resource Manager Terraform Provider ###
 #########################################################
 provider "azurerm" {
@@ -23,15 +23,6 @@ resource "random_string" "prefix" {
   length           = 6
   special          = false 
 }
-
-#########################################################
-##### Defines the Random string generator Provider ######
-#########################################################
-resource "random_id" "prefix" {
-  byte_length = 5 
-}
-
-
 
 #########################################################
 ######### Creates Azure Resource Group ##################
