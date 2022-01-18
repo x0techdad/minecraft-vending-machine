@@ -102,7 +102,7 @@ resource "null_resource" "provision" {
   provisioner "local-exec" {
     command = "kubectl apply -f minecraft-bds.yaml"
   }
-  depends_on = [azurerm_kubernetes_cluster.mvm-aks.name]
+  depends_on = [azurerm_kubernetes_cluster.mvm-aks]
 }
 
 output "aks_name" {
