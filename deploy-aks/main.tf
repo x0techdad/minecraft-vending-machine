@@ -92,6 +92,11 @@ resource "azurerm_kubernetes_cluster" "mvm-aks" {
 
 }
 
+resource "null_resource" "provision" {
+  provisioner "local-exec" {
+    command = "az aks get-credentials -n ${azurerm_kubernetes_cluster.k8s.name} -g ${azurerm_resource_group.k8s.name}"
+  }
+}
 output "aks_name" {
   value = azurerm_kubernetes_cluster.mvm-aks.name
 }
