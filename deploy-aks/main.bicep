@@ -16,135 +16,22 @@ Resource domains
 6. Monitoring
 */
 
-//global deployment parameters
+//**deployment parameters**
+//global settings:
 @description('Used to name all resources')
 @minLength(3)
 @maxLength(20)
 param resource_name_prefix string
 param location string = resourceGroup().location
 
-
-/*.__   __.  _______ .___________.____    __    ____  ______   .______       __  ___  __  .__   __.   _______ 
-|  \ |  | |   ____||           |\   \  /  \  /   / /  __  \  |   _  \     |  |/  / |  | |  \ |  |  /  _____|
-|   \|  | |  |__   `---|  |----` \   \/    \/   / |  |  |  | |  |_)  |    |  '  /  |  | |   \|  | |  |  __  
-|  . `  | |   __|      |  |       \            /  |  |  |  | |      /     |    <   |  | |  . `  | |  | |_ | 
-|  |\   | |  |____     |  |        \    /\    /   |  `--'  | |  |\  \----.|  .  \  |  | |  |\   | |  |__| | 
-|__| \__| |_______|    |__|         \__/  \__/     \______/  | _| `._____||__|\__\ |__| |__| \__|  \______| */
-//No enhanced networking required, defaults applied. 
-
-
-
-
-/*______  .__   __.      _______.    ________    ______   .__   __.  _______      _______.
-|       \ |  \ |  |     /       |   |       /   /  __  \  |  \ |  | |   ____|    /       |
-|  .--.  ||   \|  |    |   (----`   `---/  /   |  |  |  | |   \|  | |  |__      |   (----`
-|  |  |  ||  . `  |     \   \          /  /    |  |  |  | |  . `  | |   __|      \   \    
-|  '--'  ||  |\   | .----)   |        /  /----.|  `--'  | |  |\   | |  |____ .----)   |   
-|_______/ |__| \__| |_______/        /________| \______/  |__| \__| |_______||_______/    */
-//Default Azure DNS provider deployed with AKS Cluster
-
-
-
-
-/*__  __  _______ ____    ____    ____    ____  ___      __    __   __      .___________.
-|  |/  / |   ____|\   \  /   /    \   \  /   / /   \    |  |  |  | |  |     |           |
-|  '  /  |  |__    \   \/   /      \   \/   / /  ^  \   |  |  |  | |  |     `---|  |----`
-|    <   |   __|    \_    _/        \      / /  /_\  \  |  |  |  | |  |         |  |     
-|  .  \  |  |____     |  |           \    / /  _____  \ |  `--'  | |  `----.    |  |     
-|__|\__\ |_______|    |__|            \__/ /__/     \__\ \______/  |_______|    |__|     */
-//No KMS required
-
-
-
-
-/*   ___           ______     .______          
-    /   \         /      |    |   _  \         
-   /  ^  \       |  ,----'    |  |_)  |        
-  /  /_\  \      |  |         |      /         
- /  _____  \   __|  `----. __ |  |\  \----. __ 
-/__/     \__\ (__)\______|(__)| _| `._____|(__)*/
-
-//**deployment parameters**
-param res_container_reg_sku string = 'basic'
-
-//**deployment variables**
-var res_container_reg_name = 'acr${replace(resource_name_prefix, '-', '')}${uniqueString(resourceGroup().id, resource_name_prefix)}'
-
-//**resources**
-resource acr 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' = if (!empty(res_container_reg_sku)) {
-  name: res_container_reg_name
-  location: location
-  sku: {
-    name: res_container_reg_sku
-  }
-  properties: {
-    publicNetworkAccess: 'Enabled' 
-    /*
-    networkRuleSet: {
-      defaultAction: 'Deny' 
-      
-      ipRules: empty(acr_ip_whitelist) ? [] : [
-          {
-            action: 'Allow'
-            value: acr_ip_whitelist
-        }
-      ]
-      virtualNetworkRules: []
-    }
-    */
-  }
-}
-output acr_name string = !empty(res_container_reg_sku) ? acr.name : ''
-
-//Assigning the AKS identity permissions to pull images from this ACR
-var acr_pull_role = resourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
-var kubelet_object_id = any(aks.properties.identityProfile.kubeletidentity).objectId
-
-resource aks_acr_pull 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = if (!empty(res_container_reg_sku)) {
-  scope: acr // Use when specifying a scope that is different than the deployment scope
-  name: '${guid(aks.id, 'Acr' , acr_pull_role)}'
-  properties: {
-    roleDefinitionId: acr_pull_role
-    principalType: 'ServicePrincipal'
-    principalId: kubelet_object_id
-  }
-}
-
-//Assigning the AKS identity permissions to push images to this ACR
-var acr_push_role = resourceId('Microsoft.Authorization/roleDefinitions', '8311e382-0749-4cb8-b61a-304f252e45ec')
-param acr_push_role_principal_id string = ''
-
-resource aks_acr_push 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = if (!empty(res_container_reg_sku) && !empty(acr_push_role_principal_id)) {
-  scope: acr // Use when specifying a scope that is different than the deployment scope
-  name: '${guid(aks.id, 'Acr' , acr_push_role)}'
-  properties: {
-    roleDefinitionId: acr_push_role
-    principalType: 'User'
-    principalId: acr_push_role_principal_id
-  }
-}
-
-
-
-
-/*_  ___  __    __  .______    _______ .______      .__   __.  _______ .___________. _______      _______.
-|  |/  / |  |  |  | |   _  \  |   ____||   _  \     |  \ |  | |   ____||           ||   ____|    /       |
-|  '  /  |  |  |  | |  |_)  | |  |__   |  |_)  |    |   \|  | |  |__   `---|  |----`|  |__      |   (----`
-|    <   |  |  |  | |   _  <  |   __|  |      /     |  . `  | |   __|      |  |     |   __|      \   \    
-|  .  \  |  `--'  | |  |_)  | |  |____ |  |\  \----.|  |\   | |  |____     |  |     |  |____ .----)   |   
-|__|\__\  \______/  |______/  |_______|| _| `._____||__| \__| |_______|    |__|     |_______||_______/ */
-
-//**deployment parameters**
-//service settings:
-param kubernetes_version string = '1.20.9'
-param aks_paid_sku_for_sla bool = false
-
-//governance settings:
-param dev bool
-
 //security settings:
 // for AAD Integrated Cluster using 'enable_azure_rbac', add Cluster admin to the current user!
 param admin_principle_id string = ''
+
+//governance settings:
+param dev bool
+param kubernetes_version string = '1.20.9'
+param aks_paid_sku_for_sla bool = false
 
 //iam settings:
 param enable_aad bool = true
@@ -158,6 +45,57 @@ param enable_azure_rbac bool = true
   'standard'
   'premium'
 ])
+
+
+/*.__   __.  _______ .___________.____    __    ____  ______   .______       __  ___  __  .__   __.   _______ 
+|  \ |  | |   ____||           |\   \  /  \  /   / /  __  \  |   _  \     |  |/  / |  | |  \ |  |  /  _____|
+|   \|  | |  |__   `---|  |----` \   \/    \/   / |  |  |  | |  |_)  |    |  '  /  |  | |   \|  | |  |  __  
+|  . `  | |   __|      |  |       \            /  |  |  |  | |      /     |    <   |  | |  . `  | |  | |_ | 
+|  |\   | |  |____     |  |        \    /\    /   |  `--'  | |  |\  \----.|  .  \  |  | |  |\   | |  |__| | 
+|__| \__| |_______|    |__|         \__/  \__/     \______/  | _| `._____||__|\__\ |__| |__| \__|  \______| */
+//No enhanced networking required, defaults applied. 
+
+
+
+/*______  .__   __.      _______.    ________    ______   .__   __.  _______      _______.
+|       \ |  \ |  |     /       |   |       /   /  __  \  |  \ |  | |   ____|    /       |
+|  .--.  ||   \|  |    |   (----`   `---/  /   |  |  |  | |   \|  | |  |__      |   (----`
+|  |  |  ||  . `  |     \   \          /  /    |  |  |  | |  . `  | |   __|      \   \    
+|  '--'  ||  |\   | .----)   |        /  /----.|  `--'  | |  |\   | |  |____ .----)   |   
+|_______/ |__| \__| |_______/        /________| \______/  |__| \__| |_______||_______/    */
+//Default Azure DNS provider deployed with AKS Cluster
+
+
+
+/*__  __  _______ ____    ____    ____    ____  ___      __    __   __      .___________.
+|  |/  / |   ____|\   \  /   /    \   \  /   / /   \    |  |  |  | |  |     |           |
+|  '  /  |  |__    \   \/   /      \   \/   / /  ^  \   |  |  |  | |  |     `---|  |----`
+|    <   |   __|    \_    _/        \      / /  /_\  \  |  |  |  | |  |         |  |     
+|  .  \  |  |____     |  |           \    / /  _____  \ |  `--'  | |  `----.    |  |     
+|__|\__\ |_______|    |__|            \__/ /__/     \__\ \______/  |_______|    |__|     */
+//No KMS required
+
+
+
+/*   ___           ______     .______          
+    /   \         /      |    |   _  \         
+   /  ^  \       |  ,----'    |  |_)  |        
+  /  /_\  \      |  |         |      /         
+ /  _____  \   __|  `----. __ |  |\  \----. __ 
+/__/     \__\ (__)\______|(__)| _| `._____|(__)*/
+
+//No Azure Container registry required, hosting image on Docker Hub
+
+
+
+/*_  ___  __    __  .______    _______ .______      .__   __.  _______ .___________. _______      _______.
+|  |/  / |  |  |  | |   _  \  |   ____||   _  \     |  \ |  | |   ____||           ||   ____|    /       |
+|  '  /  |  |  |  | |  |_)  | |  |__   |  |_)  |    |   \|  | |  |__   `---|  |----`|  |__      |   (----`
+|    <   |  |  |  | |   _  <  |   __|  |      /     |  . `  | |   __|      |  |     |   __|      \   \    
+|  .  \  |  `--'  | |  |_)  | |  |____ |  |\  \----.|  |\   | |  |____     |  |     |  |____ .----)   |   
+|__|\__\  \______/  |______/  |_______|| _| `._____||__| \__| |_______|    |__|     |_______||_______/ */
+
+//agent general settings:
 param pool_tier string
 param auto_scale bool
 param os_disk_type string = 'Ephemeral'
@@ -181,7 +119,7 @@ param dns_service_ip string = '10.0.0.10'
 param docker_bridge_cidr string = '172.17.0.1/16'
 
 
-//**deployment variables**
+//deployment variables:
 var aks_sku = aks_paid_sku_for_sla ? 'Paid' : 'Free'
 var pool_presets_base = {
   osType: 'Linux'
@@ -270,7 +208,7 @@ var aks_properties_base = {
   }
 }
 
-//Deploying AKS resources
+//Resources:
 resource aks 'Microsoft.ContainerService/managedClusters@2021-07-01' = {
   name: 'aks${resource_name_prefix}'
   location: location
