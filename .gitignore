@@ -59,7 +59,7 @@ terraform.rc
 *.terraform
 .hcl
 .lock
-.terraform.lock.hcl
+*.terraform.lock.hcl
 
 # Ignore Pub Files
 .pub
