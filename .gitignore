@@ -57,6 +57,9 @@ terraform.rc
 # Ignore HCL configuration files
 *.lock.hcl
 *.terraform
+.hcl
+.lock
+.terraform.lock.hcl
 
 # Ignore Pub Files
 .pub
