@@ -125,8 +125,8 @@
           * [AKS Cluster Admin](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#azure-kubernetes-service-cluster-admin-role)
           * [AKS Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#azure-kubernetes-service-contributor-role)
           * [AKS Service RBAC Cluster Admin](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#azure-kubernetes-service-rbac-cluster-admin)
-        * Deploy AKS infra resources using Azure Bicep (IaC), check out the [additional scenarios](#additional_scenarios) section for details on deploying with Terraform instead:
-
+        * Deploy AKS infra resources using Azure Bicep (IaC):
+          
           `az deployment group create --name deploy-cooldad-mvm-aks --resource-group rg-cooldad-mvm --template-file .\deploy-aks\main.bicep --parameters .\deploy-aks\_main.params.json`
 
         * Retrieve important deployment output values, take note of these or save in CLI variables
