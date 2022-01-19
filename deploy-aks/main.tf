@@ -91,7 +91,12 @@ resource "azurerm_kubernetes_cluster" "mvm-aks" {
    }
 
 }
-
+#########################################################
+######### Utilizing the Terraform provisioner ###########
+#########   This will authenticate into AKS ##############
+#########      create persistent storage   ##############
+###########    create minecraft server       ############
+#########################################################
 resource "null_resource" "provision" {
   provisioner "local-exec" {
     command = "az aks get-credentials -n ${azurerm_kubernetes_cluster.mvm-aks.name} -g ${azurerm_resource_group.rg-cooldad-mvm.name}"
