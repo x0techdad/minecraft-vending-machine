@@ -139,10 +139,10 @@
           `az aks get-credentials --resource-group rg-cooldad-mvm --name <aks_name>`
         * Configure Persistent Volume Claims (PVCs)
 
-          `kubectl apply -f .\azure_files_pvc.yaml`
+          `kubectl apply -f .\deploy-aks\azure_files_pvc.yaml`
 
   2. Customize Minecraft server deployment
-      *  Open file `.\minecraft-bds.yml` with your preffered text editor. This file declares the configuration, or spec, of the app we are trying to deploy on K8S. 
+      *  Open file `.\deploy-aks\minecraft-bds.yml` with your preffered text editor. This file declares the configuration, or spec, of the app we are trying to deploy on K8S. 
       * Modify [server](https://minecraft.fandom.com/wiki/Server.properties) and gameplay settings for all users:
         ```
           - name: level_name #changing value results in player data loss
@@ -164,7 +164,7 @@
         `az aks get-credentials --resource-group rg-cooldad-mvm --name <aks_name>`
       * Launch the container and configure the service
 
-        `kubectl apply -f .\minecraft-bds.yaml`
+        `kubectl apply -f .\deploy-aks\minecraft-bds.yaml`
       * Start the log stream to observe for errors
 
         `kubectl logs -f statefulSets/ss-mc-bds-001`
@@ -206,7 +206,7 @@
         <img src="./_img/it_was_all_a_dream.png" width=500>
       </p>
 
-  ### Additional scenarios
+  ### Additional deployment scenarios
   Details for the following scenarions will be added in the next version:
   * Creating, hosting and deploying a custom Docker image
   * Hosting multiple Minecraft servers / instances on AKS 
@@ -304,12 +304,12 @@
   
   * Add additional node pool, deploy multiple Minecraft servers on a single cluster. Included in the next version.--->
 
-  ### T-shooting
+  ### Deployment t-shooting
   * Use [platform activity](https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log#view-the-activity-log) logs to investigatge deployment errors.
       
   * Use [kubelet](https://docs.microsoft.com/en-us/azure/aks/kubelet-logs) logs from AKS nodes to investigatge cluster configuration errors.
       
-  ### Lessons learned
+  ### Deployment lessons learned
   Below is a list of gotchas we ran into when running Minecraft server using a container-based approach, and how we solved for each: 
   * #### We are restricted from distributing/including the server software in our Docker image. Minecraft server [properties](https://minecraft.fandom.com/wiki/Server.properties) (eg. creative vs. survival mode) are set on a local config file. The EULA must be accepted before the server is started.
     The above requires us to download and install the server software, modify server properties, accept the EULA, then start the server in a programmatic / fully-automated fashion (no manual human intervention). The following was implemented to meet these requirements:
@@ -341,8 +341,7 @@
 
   
   * #### Minecraft server is a stateful app, game data (user and world saved states) is saved on mounted volumes. Data loss is inevitable if stored locally due to the ephemeral nature of container storage.
-    The above requires us to provide stable, persistent data storage to our containerized app via  Persistent Volumes (PVs). 
-    * [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction) is used to provide persistent and stabale data storage in all deployment models. 
+    The above requires us to provide stable, persistent data storage to our containerized app via  Persistent Volumes (PVs). [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction) is used to provide persistent and stable data storage in all deployment models. 
       * This storage is managed manually if using ACI. 
       * AKS minimizes management overhead, by dynamically manage this storage for us.
     
