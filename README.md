@@ -66,11 +66,12 @@
 ## Tech
   * Minecraft BDS 1.18.2.03
   * Ubuntu server 20.04
-  * Docker  20.10
-  * Kubernetes (K8S) 1.20.9
-    * [Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/)
-    * [Azure Container Instance (ACI)](https://docs.microsoft.com/en-us/azure/container-instances/)
-
+  * Docker 20.10 (if creating your own image)
+  * Compute options:
+    * Containers as a Service (CaaS)
+      * [Azure Container Instance (ACI)](https://docs.microsoft.com/en-us/azure/container-instances/)
+    * Kubernetes 1.20.9 (K8S)
+      * [Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/)
 
 ## Setup
   ### Environment
@@ -92,9 +93,12 @@
 
         `brew update && brew install azure-cli`
 
-  4. Install the [Bicep CLI](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install#azure-cli)
-      * a declarative domain-specific language (DSL) used to deploy and configure Azure resources via code. 
-      * there are 3rd party IaC substitutions available; Terraform, Ansible, Pulumi, etc. Bicep was used to keep project dependencies and costs down. IMO, cloud-native interfaces usually provide better experiences and performance.
+  4. Install preferred cloud infrastructure / resource deployment framework:
+      * [Azure Bicep CLI](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install#azure-cli)
+        * Platform-native, declarative domain-specific language (DSL) used to deploy and configure Azure resources via code. 
+        * there are 3rd party IaC substitutions available; Terraform, Ansible, Pulumi, etc. Bicep was used to keep project dependencies and costs down. IMO, cloud-native interfaces usually provide better experiences and performance.
+      <!---* [Terraform CLI](https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/azure-get-started)
+        * 3rd party IaC provider--->
 
   5. [Open a free Azure account and PAYG subcription](https://azure.microsoft.com/en-us/free/)
       * If you are using a pre-existing Azure subscription, [verify](https://docs.microsoft.com/en-us/azure/role-based-access-control/check-access) that you have at least Owner role assigned at the subscription level.
@@ -113,45 +117,32 @@
 
   ### Deployment
   1. Pick your preferred cloud infra pattern and deploy it:
-      ##### ACI (fast, small, cheap)
+      #### ACI (fast, small, cheap)
       * Sorry, currently developing the infra code to deploy this scenario, check back soon! Check out the AKS pattern below, the deployment has been cost optimized,  shouldnt ding your credits too bad to use for a few sessions of game play. 
 
-      ##### AKS (scalable, fully-managed, production-ready)
+      #### AKS (scalable, fully-managed, production-ready)
         * Additional permissions are required to manage the K8S cluster. [Assign]((https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps)) the following Azure RBAC roles to your username at the subscription level:  
           * [AKS Cluster Admin](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#azure-kubernetes-service-cluster-admin-role)
           * [AKS Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#azure-kubernetes-service-contributor-role)
           * [AKS Service RBAC Cluster Admin](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#azure-kubernetes-service-rbac-cluster-admin)
-        * Deploy AKS infra resources
-
+        * Deploy AKS infra resources using Azure Bicep (IaC):
+          
           `az deployment group create --name deploy-cooldad-mvm-aks --resource-group rg-cooldad-mvm --template-file .\deploy-aks\main.bicep --parameters .\deploy-aks\_main.params.json`
+
         * Retrieve important deployment output values, take note of these or save in CLI variables
 
           `az deployment group show -g rg-cooldad-mvm -n deploy-cooldad-mvm-aks --query properties.outputs.acr_name.value`
             
           `az deployment group show -g rg-cooldad-mvm -n deploy-cooldad-mvm-aks --query properties.outputs.aks_name.value`
-        * Check that AKS has access to pull images from ACR
-
-          `az aks check-acr --acr <acr_name>.azurecr.io --name <aks_name> --resource-group rg-cooldad-mvm`
-        * Connect to ACR, pull custom image from Docker Hub. If you created your own image replace the image specified `cooltechdad/minecraft-bds:0.5` with your image's details. If you want to build your own image, pause here head over to the [image build](#image-build) section, and resume here when you have pushed your own image to Docker Hub.
-
-          `az acr login --name <acr_name> --expose-token`
-          
-          `az acr import --name <acr_name> --source docker.io/cooltechdad/minecraft-bds:0.5 --image cooltechdad/minecraft-bds:0.5 --force`
         * Log into the AKS cluster
 
           `az aks get-credentials --resource-group rg-cooldad-mvm --name <aks_name>`
         * Configure Persistent Volume Claims (PVCs)
 
-          `kubectl apply -f .\azure_files_pvc.yaml`
+          `kubectl apply -f .\deploy-aks\azure_files_pvc.yaml`
 
   2. Customize Minecraft server deployment
-      *  Open file `.\minecraft-bds.yml` with your preffered text editor.
-          * This file declares the configuration, or spec, of the app we are trying to deploy on k8s. 
-      * Specify your ACR's name and the image to use/pull on line 25
-        * If you are using the CoolTechDad image, only plug in your ACR's name\
-        `image: <acr_name>.azurecr.io/cooltechdad/minecraft-bds:0.5`
-        * If you are creating your own image, plug in your ACR's name and image details\
-        `image: <acr_name>.azurecr.io/<namespace/image name:image tag>`
+      *  Open file `.\deploy-aks\minecraft-bds.yml` with your preffered text editor. This file declares the configuration, or spec, of the app we are trying to deploy on K8S. 
       * Modify [server](https://minecraft.fandom.com/wiki/Server.properties) and gameplay settings for all users:
         ```
           - name: level_name #changing value results in player data loss
@@ -166,14 +157,14 @@
             value: "1000"
         ```
       * Save your changes and close the file
-  
+
   3. Deploy Minecraft server
       * Log into the AKS cluster
 
         `az aks get-credentials --resource-group rg-cooldad-mvm --name <aks_name>`
       * Launch the container and configure the service
 
-        `kubectl apply -f .\minecraft-bds.yaml`
+        `kubectl apply -f .\deploy-aks\minecraft-bds.yaml`
       * Start the log stream to observe for errors
 
         `kubectl logs -f statefulSets/ss-mc-bds-001`
@@ -192,7 +183,7 @@
           <img src="./_img/mvm_k8s_service_lb.png"  width=500>
         </p>
 
-      * 🎉 Congrats, you have successfully deployed a Minecraft Server container, on k8s, in the public cloud, time to connect! 
+      * 🎉 Congrats, you have successfully deployed a Minecraft Server container, on K8S, in the public cloud, time to connect! 
 
       <p align="center">
         <img src="https://media3.giphy.com/media/l49K1yUmz5LjIu0GA/giphy.gif"  width=300>
@@ -215,90 +206,12 @@
         <img src="./_img/it_was_all_a_dream.png" width=500>
       </p>
 
-  ### Additional scenarios
-  * AKS: Add additional node pool, deploy multiple Minecraft servers on a single cluster. Included in the next version.
-  * ACI: Deployment guide and code will be included in the next version.
-
-  ### T-shooting
-  * Use [platform activity](https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log#view-the-activity-log) logs to investigatge deployment errors.
-      
-  * Use [kubelet](https://docs.microsoft.com/en-us/azure/aks/kubelet-logs) logs from AKS nodes to investigatge cluster configuration errors.
-      
-  ### Lessons learned
-  Below is a list of gotchas we ran into when running Minecraft server using a container-based approach, and how we solved for each: 
-  * #### We are restricted from distributing/including the server software in our Docker image. Minecraft server [properties](https://minecraft.fandom.com/wiki/Server.properties) (eg. creative vs. survival mode) are set on a local config file. The EULA must be accepted before the server is started.
-    The above requires us to download and install the server software, modify server properties, accept the EULA, then start the server in a programmatic / fully-automated fashion (no manual human intervention). The following was implemented to meet these requirements:
-    
-    * `.\docker\run-bds.sh` was developed to execute required tasks via CLI
-
-      * Accept EULA 
-        <p align="center">
-          <img src="./_img/mvm_script_eula.png" width=500>
-        </p>
-          
-      * Download Minecraft server software and install
-        <p align="center">
-          <img src="./_img/mvm_script_dlbds.png" width=500>
-        </p>
-      * Modify server properties
-        <p align="center">
-          <img src="./_img/mvm_script_server_props.png" width=500>
-        </p>
-      * Start server
-        <p align="center">
-          <img src="./_img/mvm_script_start_server.png" width=500>
-        </p>
-    * `.\docker\DockerFile` was developed to copy script into container image and set as a startup script during image build 
-      
-      ` COPY run-bds.sh /opt/`\
-      ...\
-      `ENTRYPOINT [ "/bin/bash", "/opt/run-bds.sh" ]`
-
-  
-  * #### Minecraft server is a stateful app, game data (user and world saved states) is saved on mounted volumes. Data loss is inevitable if stored locally due to the ephemeral nature of container storage.
-    The above requires us to provide stable, persistent data storage to our app via K8S Persistent Volumes (PVs). Also, to minimize management overhead, we need the system to dynamically manage this storage for us. 
-    
-    The following configurations are defined in the AKS deployment to meet these requirements:
-      * A Persistent Volume Claim (PVC) that dynamically provisions Persistent Volumes (PVs) on the [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction) service is defined in `.\azure_files_pvc.yaml`. 
-          ```
-          kind: PersistentVolumeClaim
-            metadata:
-              name: pvc-001
-            spec:
-              storageClassName: sc-azure-files
-          ```
-        Create this PVC on K8S by applying the spec:
-          
-          `kubectl apply -f .\azure_files_pvc.yaml`
-
-      * The above PVC is referenced in the app spec, `.\minecraft-bds-yaml`, used to launch our image: 
-
-          ```
-            volumes:
-            - name: pv-001
-                persistentVolumeClaim:
-                  claimName:  pvc-001
-          ``` 
-          ```
-          volumeMounts:
-            - name: pv-001
-              mountPath: /data
-          ```     
-      * A [StatesfulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/) desired state is defined for our app, instead of the typically used [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) app kind.
-        ```
-        apiVersion: apps/v1
-        kind: StatefulSet
-        ```
-      
-        A StatefulSet configuration ensures that the same dynamically created PV is mapped to the K8S [pod](https://kubernetes.io/docs/concepts/workloads/pods/) running our app after system failures, reboots, or maintenance.
-      
-      * Deploy the stateful desired state by using the provided app spec:
-      
-        `kubectl apply -f .\minecraft-bds.yaml`
-        
-        K8S will first attempt to dynamically create a volume. If this fails, container creation fails. If it is successful, the PV will be mounted, and container creation will resume.
-
-  ### Image Build
+  ### Additional deployment scenarios
+  Details for the following scenarions will be added in the next version:
+  * Creating, hosting and deploying a custom Docker image
+  * Hosting multiple Minecraft servers / instances on AKS 
+<!---##### Custom Docker Image
+    ### Image Build
   Follow these steps if you'd like to build and publish your container image (not as hard as it sounds).
   1. Install Docker on your machine
       * [Windows](https://docs.docker.com/desktop/windows/install/)
@@ -370,15 +283,110 @@
       * The latest version of CoolTechDad's image for this project
         * Source `docker.io/cooltechdad/minecraft-bds:0.5`
         * URL https://hub.docker.com/repository/docker/cooltechdad/minecraft-bds
+  * Specify your ACR's name and the image to use/pull on line 25
+  * If you are using the CoolTechDad image, only plug in your ACR's name\
+  `image: <acr_name>.azurecr.io/cooltechdad/minecraft-bds:0.5`
+  * If you are creating your own image, plug in your ACR's name and image details\
+  `image: <acr_name>.azurecr.io/<namespace/image name:image tag>`
+  ##### Deploy AKS infra resources using Terraform (IaC):
 
+    `az deployment group create --name deploy-cooldad-mvm-aks --resource-group rg-cooldad-mvm --template-file .\deploy-aks\main.bicep --parameters .\deploy-aks\_main.params.json`
+#### ACI 
+  * Deployment guide and code will be included in the next version.
+  #### AKS
+  * Check that AKS has access to pull images from ACR
+      `az aks check-acr --acr <acr_name>.azurecr.io --name <aks_name> --resource-group rg-cooldad-mvm`
+  * Connect to ACR, pull custom image from Docker Hub. If you created your own image replace the image specified `cooltechdad/minecraft-bds:0.5` with your image's details. If you want to build your own image, pause here head over to the [image build](#image-build) section, and resume here when you have pushed your own image to Docker Hub.
     
+    `az acr login --name <acr_name> --expose-token`  
+    
+    `az acr import --name <acr_name> --source docker.io/cooltechdad/minecraft-bds:0.5 --image cooltechdad/minecraft-bds:0.5 --force`
+  
+  * Add additional node pool, deploy multiple Minecraft servers on a single cluster. Included in the next version.--->
 
-## Meta
-Maintained by: 
-- CoolTechDad\
-    Twitter: [@cool_tech_dad_](https://twitter.com/cool_tech_dad_)\
-    GitHub: [cool-tech-dad](https://github.com/cool-tech-dad)\
-    Discord: CoolTechDad#7007
+  ### Deployment t-shooting
+  * Use [platform activity](https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log#view-the-activity-log) logs to investigatge deployment errors.
+      
+  * Use [kubelet](https://docs.microsoft.com/en-us/azure/aks/kubelet-logs) logs from AKS nodes to investigatge cluster configuration errors.
+      
+  ### Deployment lessons learned
+  Below is a list of gotchas we ran into when running Minecraft server using a container-based approach, and how we solved for each: 
+  * #### We are restricted from distributing/including the server software in our Docker image. Minecraft server [properties](https://minecraft.fandom.com/wiki/Server.properties) (eg. creative vs. survival mode) are set on a local config file. The EULA must be accepted before the server is started.
+    The above requires us to download and install the server software, modify server properties, accept the EULA, then start the server in a programmatic / fully-automated fashion (no manual human intervention). The following was implemented to meet these requirements:
+    
+    * `.\docker\run-bds.sh` was developed to execute required tasks via CLI
+
+      * Accept EULA 
+        <p align="center">
+          <img src="./_img/mvm_script_eula.png" width=500>
+        </p>
+          
+      * Download Minecraft server software and install
+        <p align="center">
+          <img src="./_img/mvm_script_dlbds.png" width=500>
+        </p>
+      * Modify server properties
+        <p align="center">
+          <img src="./_img/mvm_script_server_props.png" width=500>
+        </p>
+      * Start server
+        <p align="center">
+          <img src="./_img/mvm_script_start_server.png" width=500>
+        </p>
+    * `.\docker\DockerFile` was developed to copy script into container image and set as a startup script during image build 
+      
+      ` COPY run-bds.sh /opt/`\
+      ...\
+      `ENTRYPOINT [ "/bin/bash", "/opt/run-bds.sh" ]`
+
+  
+  * #### Minecraft server is a stateful app, game data (user and world saved states) is saved on mounted volumes. Data loss is inevitable if stored locally due to the ephemeral nature of container storage.
+    The above requires us to provide stable, persistent data storage to our containerized app via  Persistent Volumes (PVs). [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction) is used to provide persistent and stable data storage in all deployment models. 
+      * This storage is managed manually if using ACI. 
+      * AKS minimizes management overhead, by dynamically manage this storage for us.
+    
+<!---
+    The following configurations are defined in the AKS deployment to meet these requirements:
+      * A Persistent Volume Claim (PVC) that dynamically provisions Persistent Volumes (PVs) on the [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction) service is defined in `.\azure_files_pvc.yaml`. 
+          ```
+          kind: PersistentVolumeClaim
+            metadata:
+              name: pvc-001
+            spec:
+              storageClassName: sc-azure-files
+          ```
+        Create this PVC on K8S by applying the spec:
+          
+          `kubectl apply -f .\azure_files_pvc.yaml`
+
+      * The above PVC is referenced in the app spec, `.\minecraft-bds-yaml`, used to launch our image: 
+
+          ```
+            volumes:
+            - name: pv-001
+                persistentVolumeClaim:
+                  claimName:  pvc-001
+          ``` 
+          ```
+          volumeMounts:
+            - name: pv-001
+              mountPath: /data
+          ```     
+      * A [StatesfulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/) desired state is defined for our app, instead of the typically used [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) app kind.
+        ```
+        apiVersion: apps/v1
+        kind: StatefulSet
+        ```
+      
+        A StatefulSet configuration ensures that the same dynamically created PV is mapped to the K8S [pod](https://kubernetes.io/docs/concepts/workloads/pods/) running our app after system failures, reboots, or maintenance.
+      
+      * Deploy the stateful desired state by using the provided app spec:
+      
+        `kubectl apply -f .\minecraft-bds.yaml`
+        
+        K8S will first attempt to dynamically create a volume. If this fails, container creation fails. If it is successful, the PV will be mounted, and container creation will resume.
+        --->
+    
 
 ## Contribute
 1. Fork project\
@@ -390,6 +398,13 @@ Maintained by:
 4. Push to the branch\
   `git push origin feature/foo_bar`
 5. Create a new Pull Request
+
+## Contributors
+- CoolTechDad\
+    Twitter: [@cool_tech_dad_](https://twitter.com/cool_tech_dad_)\
+    GitHub: [cool-tech-dad](https://github.com/cool-tech-dad)\
+    Discord: CoolTechDad#7007
+
 
 ## Backlog
 - [ ] Change server runtime context to a non-root user

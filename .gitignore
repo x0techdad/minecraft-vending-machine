@@ -7,6 +7,9 @@ project.lock.json
 # Visual Studio Code
 .vscode
 
+# Convert to LF line endings on checkout.
+*.sh text eol=lf
+
 # User-specific files
 *.suo
 *.user
