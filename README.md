@@ -139,7 +139,7 @@
   </p>
 
 ## Lessons learned
-  <a href="./docs/aci.md">This doc</a> lists the gotchas and pitfalls we ran into when running Minecraft BDS in a container, and how we solved for each.
+  <a href="./docs/lessons.md">This doc</a> lists the gotchas and pitfalls we ran into when running Minecraft BDS in a container, and how we solved for each.
   
 ## Contribute
 Please follow the instructions below if you'd like to contribute to the project:

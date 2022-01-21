@@ -9,7 +9,7 @@ We are restricted from distributing/including the server software in our Docker 
 
 The above requires us to download and install the server software, modify server properties, accept the EULA, then start the server in a programmatic / fully-automated fashion (no manual human intervention). The following was implemented to meet these requirements:
 
-  * `.\docker\run-bds.sh` was developed to execute required tasks via CLI
+  * `.\docker\run_bds.sh` was developed to execute required tasks via CLI
 
     * Accept EULA 
       <p align="center">
@@ -31,9 +31,9 @@ The above requires us to download and install the server software, modify server
     * `.\docker\DockerFile` was developed to copy the bootstrap script into container image and setup for startup execution.
     
       ```
-      COPY ../docker/run-bds.sh /opt/
+      COPY ../docker/run_bds.sh /opt/
       ...
-      ENTRYPOINT [ "/bin/bash", "/opt/run-bds.sh" ]
+      ENTRYPOINT [ "/bin/bash", "/opt/run_bds.sh" ]
       ```
 ## Stateful app requirment
 Minecraft server is a stateful app, game data (user and world saved states) is saved on mounted volumes. Data loss is inevitable if stored locally due to the ephemeral nature of container storage.

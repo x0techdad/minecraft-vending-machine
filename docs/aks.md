@@ -90,7 +90,7 @@ Follow the deployment steps for your preffered IaC tool:
       
       * Take note of the value listed for `LoadBalancer Ingress`, this is the public IP address you and guests will use to connect. 
 
-🎉 Congrats, you have successfully deployed a Minecraft BDS server , in a container, on K8S, in the public cloud, its time to <a href="../README.md#connect">connect & play:video_game: !</a> 
+🎉 Congrats, you have successfully deployed a Minecraft BDS server , in a container, on K8S, in the public cloud, its time to <a href="../README.md#3-connect">connect & play:video_game: !</a> 
 
   <p align="center">
     <img src="https://media3.giphy.com/media/l49K1yUmz5LjIu0GA/giphy.gif"  width=300>
