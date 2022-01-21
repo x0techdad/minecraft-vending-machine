@@ -1,10 +1,9 @@
-# Minecraft Vending Machine
+# Lessons Learned
 <p align="center">
-  <img src="../_img/mvm_logo.gif" width="400"></br>
-  <a href="../readme.md">Home</a>
+  <img src="../images/mvm_logo.gif" width="400"></br>
+  <a href="../README.md">Home</a>
 </p>
 
-# Lessons learned
 ## Software distribution restrictions
 We are restricted from distributing/including the server software in our Docker image. Minecraft server [properties](https://minecraft.fandom.com/wiki/Server.properties) (eg. creative vs. survival mode) are set on a local config file. Finally, the EULA must be accepted before the server is started.
 
@@ -14,20 +13,20 @@ The above requires us to download and install the server software, modify server
 
     * Accept EULA 
       <p align="center">
-        <img src="../_img/mvm_script_eula.png" width=500>
+        <img src="../images/mvm_script_eula.png" width=500>
       </p>
         
     * Download Minecraft server software and install
       <p align="center">
-        <img src="../_img/mvm_script_dlbds.png" width=500>
+        <img src="../images/mvm_script_dlbds.png" width=500>
       </p>
     * Modify server properties
       <p align="center">
-        <img src="../_img/mvm_script_server_props.png" width=500>
+        <img src="../images/mvm_script_server_props.png" width=500>
       </p>
     * Start server
       <p align="center">
-        <img src="../_img/mvm_script_start_server.png" width=500>
+        <img src="../images/mvm_script_start_server.png" width=500>
       </p>
     * `.\docker\DockerFile` was developed to copy the bootstrap script into container image and setup for startup execution.
     
