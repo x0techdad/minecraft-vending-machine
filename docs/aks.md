@@ -1,14 +1,13 @@
-# Minecraft Vending Machine
+# Minecraft BDS container on AKS (K8S)
 <p align="center">
   <img src="../images/mvm_logo.gif" width="400"></br>
-  <a href="../readme.md">Home</a> |
+  <a href="../README.md">Home</a> |
   <a href="#prereqs">Prereqs</a> |
   <a href="#bicep">Bicep</a> |
   <a href="#terraform">Terraform</a> |
   <a href="#service">Service</a>
 </p>
 
-# Minecraft BDS container on AKS (K8S)
 # Prereqs
 * Additional permissions are required to manage the K8S cluster once deployed. [Assign]((https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps)) the following Azure RBAC roles to your username at the subscription level:  
   * [AKS Cluster Admin](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#azure-kubernetes-service-cluster-admin-role)
@@ -91,7 +90,7 @@ Follow the deployment steps for your preffered IaC tool:
       
       * Take note of the value listed for `LoadBalancer Ingress`, this is the public IP address you and guests will use to connect. 
 
-🎉 Congrats, you have successfully deployed a Minecraft BDS server , in a container, on K8S, in the public cloud, its time to <a href="../readme.md#connect">connect & play:video_game: !</a> 
+🎉 Congrats, you have successfully deployed a Minecraft BDS server , in a container, on K8S, in the public cloud, its time to <a href="../README.md#connect">connect & play:video_game: !</a> 
 
   <p align="center">
     <img src="https://media3.giphy.com/media/l49K1yUmz5LjIu0GA/giphy.gif"  width=300>
@@ -101,7 +100,7 @@ Follow the deployment steps for your preffered IaC tool:
 * Use [platform activity](https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log#view-the-activity-log) logs to investigatge deployment errors.
 * Use [kubelet](https://docs.microsoft.com/en-us/azure/aks/kubelet-logs) logs from AKS nodes to investigatge cluster configuration errors.
 ### Additional deployment scenarios
-  * Using a custom Docker image will be added in the next version.  
+  * Directions for using a custom Docker image will be added soon.
 <!---
 * Using a custom Docker image:
   * Retrieve the URI of your custom image, should look something like this if hosted on Docker Hub: `docker.io/<namespace>/<image name>:<tag>`
