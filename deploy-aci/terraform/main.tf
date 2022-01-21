@@ -113,6 +113,6 @@ resource "azurerm_container_group" "cooldad-mvm-cg" {
 output "container_ip_address" {
   value = azurerm_container_group.cooldad-mvm-cg.ip_address
 }
-output "contain_dns_name" {
-  value = azurerm_container_group.cooldad-mvm-cg.dns_name_label
+output "contain_name" {
+  value = azurerm_container_group.cooldad-mvm-cg.name
 }
