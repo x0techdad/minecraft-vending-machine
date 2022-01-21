@@ -1,12 +1,5 @@
-########################################################
-### Defines Azure Resource Manager Terraform Provider ###
 #########################################################
-provider "azurerm" {
-    version = "2.9.0"
-    features {}
-}
-#########################################################
-##### Defines the Random string generator Provider ######
+##### Defines required providers ########################
 #########################################################
 terraform {
   required_providers {
@@ -14,13 +7,23 @@ terraform {
       source = "hashicorp/random"
       version = "2.3.0"
     }
+
+    azurerm = {
+      source = "hashicorp/azurerm"
+      version = "2.91.0"
+    }
   }
 }
+
+provider "azurerm" {
+  features {}
+}
+
 #########################################################
-##### Defines the Random string generator Provider ######
+##### Defines random string properties ##################
 #########################################################
 resource "random_string" "prefix" {
-  length           = 6
+  length           = 4
   special          = false 
 }
 
@@ -28,57 +31,27 @@ resource "random_string" "prefix" {
 ######### Creates Azure Resource Group ##################
 #########################################################
 resource "azurerm_resource_group" "rg-cooldad-mvm" {
-  name = "rg-cooldad-mvm"
+  name = "rg-cooldad-mvm-aks"
   location = var.resource_location
 }
 
 #########################################################
-######### Creates Azure Virtual Network #################
-#########################################################
-resource "azurerm_virtual_network" "mvm-aks-vnet" {
-    name = "mvm-aks-vnet"
-    address_space = ["192.168.0.0/16"]
-    location = azurerm_resource_group.rg-cooldad-mvm.location
-    resource_group_name = azurerm_resource_group.rg-cooldad-mvm.name
-}
-
-
-#########################################################
-######### Creates Azure Subnet tied to VNET #############
-#########################################################
-resource "azurerm_subnet" "mvm-aks-subnet" {
-    name                 = "mvm-aks-subnet"
-    resource_group_name  = azurerm_resource_group.rg-cooldad-mvm.name
-    address_prefixes     = ["192.168.1.0/24"]
-    virtual_network_name = azurerm_virtual_network.mvm-aks-vnet.name
-}
-
-
-#########################################################
 ######### Creates Azure Kubernetes Cluster ##############
-######### 1 Minecraft Container is Created ##############
+################### Single node pool ####################
 ########## 2 CPU and 8 GB Memory Allocated ##############
 #########################################################
 resource "azurerm_kubernetes_cluster" "mvm-aks" {
-  name = "mvmaks${lower(random_string.prefix.result)}"
+  name = "akscooldadmvm${lower(random_string.prefix.result)}"
   location = azurerm_resource_group.rg-cooldad-mvm.location
   resource_group_name  = azurerm_resource_group.rg-cooldad-mvm.name
-  dns_prefix = "mvmaks${lower(random_string.prefix.result)}dns"
+  dns_prefix = "cooldadmvm${lower(random_string.prefix.result)}dns"
   kubernetes_version = var.kube_version
   
-  linux_profile {
-    admin_username = var.admin_username
-
-    ssh_key {
-      key_data = file(var.ssh_public_key)
-    }
-    }
    default_node_pool {
      name = "default"
-     node_count = 2
+     node_count = 1
      vm_size = "standard_b4ms"
      os_disk_size_gb = "30"
-     vnet_subnet_id = azurerm_subnet.mvm-aks-subnet.id
    } 
    
    identity {
@@ -109,8 +82,11 @@ resource "azurerm_kubernetes_cluster" "mvm-aks" {
 ####  }
 ####  depends_on = [azurerm_kubernetes_cluster.mvm-aks]
 ####}
-
-####output "aks_name" {
-####value = azurerm_kubernetes_cluster.mvm-aks.name
-#}
+#########################################################
+########### Creates some useful outputs #################
+###### this provides ease of use for connectivity #######
+#########################################################
+output "aks_name" {
+  value = azurerm_kubernetes_cluster.mvm-aks.name
+}
 

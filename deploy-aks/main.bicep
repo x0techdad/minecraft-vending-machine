@@ -112,7 +112,7 @@ param user_pool01_labels object = {
 //network settings:
 param network_plugin string = 'azure'
 param network_policy string = ''
-param dns_prefix string = '${resource_name_prefix}-dns'
+param dns_prefix string = '${resource_name_prefix}dns'
 param pod_cidr string = '10.244.0.0/16'
 param service_cidr string = '10.0.0.0/16'
 param dns_service_ip string = '10.0.0.10'

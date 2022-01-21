@@ -1,29 +1,43 @@
 #########################################################
-### Defines Azure Resource Manager Terraform Provider ###
+##### Defines required providers ########################
 #########################################################
-provider "azurerm" {
-    version = "2.9.0"
-    features {}
+terraform {
+  required_providers {
+    random = {
+      source = "hashicorp/random"
+      version = "2.3.0"
+    }
+
+    azurerm = {
+      source = "hashicorp/azurerm"
+      version = "2.91.0"
+    }
+  }
 }
+
+provider "azurerm" {
+  features {}
+}
+
 #########################################################
-##### Defines the Random string generator Provider ######
+##### Defines random string properties ##################
 #########################################################
 resource "random_string" "prefix" {
-  length           = 6
+  length           = 4
   special          = false 
 }
+
 #########################################################
 ######### Creates Azure Resource Group ##################
 #########################################################
 resource "azurerm_resource_group" "rg-cooldad-mvm" {
-  name = "rg-cooldad-mvm"
+  name = "rg-cooldad-mvm-aci"
   location = var.resource_location
 }
 
 #########################################################
-######### Creates Azure Storage Account #################
+######### Creates Azure Files Storage Account ###########
 #########################################################
-
 resource "azurerm_storage_account" "aci-storage" {
   name = "mvmsta${lower(random_string.prefix.result)}"
   resource_group_name = azurerm_resource_group.rg-cooldad-mvm.name
@@ -31,7 +45,6 @@ resource "azurerm_storage_account" "aci-storage" {
   account_tier = "Premium"
   account_replication_type = "LRS"
   account_kind = "FileStorage"
-
 }
 
 #########################################################
@@ -49,16 +62,16 @@ resource "azurerm_storage_share" "aci-share" {
 ########### 1 CPU and 2 GB Memory Allocated #############
 #########################################################
 resource "azurerm_container_group" "cooldad-mvm-cg" {
-  name = "mvmaci${lower(random_string.prefix.result)}"
+  name = "acicooldadmvm${lower(random_string.prefix.result)}"
   location = azurerm_resource_group.rg-cooldad-mvm.location
   resource_group_name = azurerm_resource_group.rg-cooldad-mvm.name
   ip_address_type = "public"
-  dns_name_label = "aci${lower(random_string.prefix.result)}"
+  dns_name_label = "cooldadmvm${lower(random_string.prefix.result)}dns"
   os_type = "Linux"
   
   container {
-    name = "minecraft"
-    image = "docker.io/cooltechdad/minecraft-bds:0.5" 
+    name = "mc-bds-001"
+    image = var.docker_image_uri
     cpu = "1"
     memory = "2"
 
