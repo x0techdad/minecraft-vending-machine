@@ -8,7 +8,7 @@ RUN apt-get update && \
 VOLUME ["/data"]
 WORKDIR /data
 
-COPY run-bds.sh /opt/
+COPY ../docker/run-bds.sh /opt/
 RUN chmod +x /opt/run-bds.sh
 
 EXPOSE 19312
