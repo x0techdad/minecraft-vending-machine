@@ -87,8 +87,4 @@ container_group = containerinstance.ContainerGroup(aci_name,
 )
 
 # Export The Azure Container IP Address To Connect To
-print("===============================================================")
 pulumi.export("Container IP Address:", container_group.ip_address.apply(lambda ip: ip.ip))
-print("===============================================================")
-
-

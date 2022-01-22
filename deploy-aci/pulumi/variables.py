@@ -1,5 +1,5 @@
 # Azure Resource Variables
-region = "CentralUS"
+region = "eastus2"
 rg_name = "rg-pythondad-mvm-aci"
 sa_name = "sapythondadmvmaci01"
 aci_name = "aci-pythondad-mvm-aci01"
