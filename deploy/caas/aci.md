@@ -94,7 +94,7 @@ Code for this deployment pattern will be available soon.
           <img src="../../images/mvm_deploy_server_success.png" width=500>
         </p>
 
-🎉 Congrats, you have successfully deployed a Minecraft BDS server , in a container, on the public cloud, its time to <a href="../../README.md#3-connect">connect & play:video_game: !</a> 
+🎉 Congrats, you have successfully deployed a Minecraft BDS server , in a container, on the public cloud, its time to <a href="../deploy.md#connect">connect & play:video_game: !</a> 
 
   <p align="center">
     <img src="https://media3.giphy.com/media/l49K1yUmz5LjIu0GA/giphy.gif" width=300>
