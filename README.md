@@ -59,9 +59,7 @@ Ok, we have the server app, dependencies, and required OS components packaged in
   
 Cloud platforms, like Azure, come in very handy, they provide us techies with access hyper scale, publically avaialble compute and storage sevices to host our workloads. These cloud services provide us with a few different methods for hosting apps, each with its advantages over the others and ideal use cases. This project offers infrastructere pattern options to host a game server, each ideal for specific use cases, details provided in the <a href="./deploy/deploy.md">deploy</a> doc.
 
-[Infrastructure as code (IaC)](https://youtu.be/WhWf48kcEXU) is used to automate the deployment and management of cloud resources. IaC allows devs to develop, deploy, and maintain application infrastructure just like software. In all deployment scenarios:
-  
-Finally, the project currently only supports the Azure platform for computing and storage. We are looking to add support for other compute/storage providers in the future. 
+[Infrastructure as code (IaC)](https://youtu.be/WhWf48kcEXU) is used to automate the deployment and management of cloud resources. IaC allows devs to develop, deploy, and maintain application infrastructure just like software. 
   
 Head over to the <a href="./deploy/deploy.md">deploy</a> doc to get started. 
 
