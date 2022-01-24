@@ -59,8 +59,7 @@ Follow the deployment steps for your preffered IaC tool:
     
       `az deployment sub show -n deploy-cooldad-mvm-aks --query properties.outputs.std_out.value`
 
-Move onto the <a href="#service">service</a> section to complete app service deployment. 
-
+Move onto the <a href="#service">service</a> section to complete deployment. 
 
 ## Terraform
   1. In your console, navigate to: `.\terraform\`
@@ -75,8 +74,7 @@ Move onto the <a href="#service">service</a> section to complete app service dep
       `terraform apply`
   5. Take note of the cluster name in the deployment output or save in CLI variable for future use. 
 
-
-Move onto the next section to complete app service deployment. 
+Move onto the next section to complete deployment. 
 
 ## Service
   1. Log into K8S, use cluster name retrieved from deployment output:

@@ -1,31 +1,31 @@
-// This Bicep template is used to specify the desired configuration of the AKS service.
-// Use deployment parameters to customize deployment.
-//
-//Project README: https://github.com/cool-tech-dad/minecraft-vending-machine 
-//If you have questions or need help, reach out via Discord: https://discord.gg/aCnzN2QsQE
-//If you want to contribute code, please see: https://github.com/cool-tech-dad/minecraft-vending-machine#contribute 
 
 /*
 Resource domains
 1. AKS
 */
 
-
-/*_  ___  __    __  .______    _______ .______      .__   __.  _______ .___________. _______      _______.
-|  |/  / |  |  |  | |   _  \  |   ____||   _  \     |  \ |  | |   ____||           ||   ____|    /       |
-|  '  /  |  |  |  | |  |_)  | |  |__   |  |_)  |    |   \|  | |  |__   `---|  |----`|  |__      |   (----`
-|    <   |  |  |  | |   _  <  |   __|  |      /     |  . `  | |   __|      |  |     |   __|      \   \    
-|  .  \  |  `--'  | |  |_)  | |  |____ |  |\  \----.|  |\   | |  |____     |  |     |  |____ .----)   |   
-|__|\__\  \______/  |______/  |_______|| _| `._____||__| \__| |_______|    |__|     |_______||_______/ */
-
-//**deployment parameters**
-//global:
+//**global parameters**
 @description('Used to name all resources')
 @minLength(3)
 @maxLength(20)
 param resource_name_prefix string
 param location string
 
+//**global variables**
+var random_string = '${take(uniqueString(resourceGroup().id), 4)}'
+var resource_name_prefix_raw = '${resource_name_prefix}${random_string}'
+var resource_name_prefix_safe = '${toLower(replace(resource_name_prefix_raw, '-', ''))}'
+
+/*   ___      __  ___      _______.     ___ __  ___   ___        _______.___  
+    /   \     |  |/  /     /       |    /  /|  |/  /  / _ \      /       |\  \ 
+   /  ^  \    |  '  /     |   (----`   |  | |  '  /  | (_) |    |   (----` |  |
+  /  /_\  \   |    <       \   \       |  | |    <    > _ <      \   \     |  |
+ /  _____  \  |  .  \  .----)   |      |  | |  .  \  | (_) | .----)   |    |  |
+/__/     \__\ |__|\__\ |_______/       |  | |__|\__\  \___/  |_______/     |  |
+                                        \__\                              /__/
+*/ 
+
+//**aks parameters**
 //governance:
 param kubernetes_version string
 param dev bool = true
@@ -49,8 +49,6 @@ param user_pool01_labels object = {
 }
 
 //**variables**
-var random_string = '${take(uniqueString(resourceGroup().id), 4)}'
-
 var pool_presets_base = {
   osType: 'Linux'
 }
@@ -110,7 +108,7 @@ var user_pool_01_labels = dev ? {} : {
 var user_pool_profile01= union( user_pool_01_name, user_pool_01_labels, pool_presets_base, user_pool_presets, user_pool_sizing[pool_tier])
 var pool_profiles = dev ? array(system_pool_profile) : concat(array(system_pool_profile), array(user_pool_profile01))
 
-var aks_properties_base = {
+var aks_properties = {
   kubernetesVersion: kubernetes_version
   dnsPrefix: '${resource_name_prefix}dns'
   aadProfile: enable_aad ? {
@@ -128,7 +126,7 @@ var aks_properties_base = {
 resource aks 'Microsoft.ContainerService/managedClusters@2021-07-01' = {
   name: 'aks${resource_name_prefix}${random_string}'
   location: location
-  properties: aks_properties_base
+  properties: aks_properties
   identity: {
     type: 'SystemAssigned'
   }

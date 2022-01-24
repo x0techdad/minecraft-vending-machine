@@ -13,38 +13,64 @@
 
 # Deploy
 Follow the deployment steps of your preffered IaC tool:
-## Bicep
-Code for this deployment pattern will be available soon.  
-<!-- 1. In your console, navigate to: `.\minecraft-vending-machine\deploy-aci\bicep`
-  2. Customize the Minecraft server runtime properties: 
-      * Open file `.\main.tf` with your preffered text editor.
-      * Modify [server](https://minecraft.fandom.com/wiki/Server.properties) settings to change the game experience:
+## Bicep 
+  1. In your console, navigate to: `.\deploy\caas\bicep\`
+  2. Open file: `.\aci.bicep`
+  3. Modify Minecraft [server](https://minecraft.fandom.com/wiki/Server.properties) environmental settings if required, save and close file:
+      * Minecraft server version, specify "latest" or full version number: `value: '1.18.2.03'`
         ```
-        environment_variables = {
-          "debug" = "true",
-          "bds_version" = "1.18.2.03",
-          "eula" = "TRUE",
-          "level_name" = "Bedrock level",
-          "gamemode" = "creative",
-          "difficulty" = "normal",
-          "allow_cheats" = "false",
-          "max_players" = "1000",
-          "server_authoritative_movement" = "server-auth-with-rewind"
-        }
+          environmentVariables: [
+            {
+              name: 'debug'
+              value: 'true'
+            }
+            {
+              name: 'bds_version'
+              value: '1.18.2.03'
+            }
+            {
+              name: 'eula'
+              value: 'true'
+            }
+            {
+              name: 'level_name'
+              value: 'Bedrock level'
+            }
+            {
+              name: 'gamemode'
+              value: 'creative'
+            }
+            {
+              name: 'difficulty'
+              value: 'normal'
+            }
+            {
+              name: 'allow_cheats'
+              value: 'false'
+            }
+            {
+              name: 'max_players'
+              value: '1000'
+            }
+            {
+              name: 'server_authoritative_movement'
+              value: 'server-auth-with-rewind'
+            }
+          ]
         ```
-      * Save your changes and close the file
+  4. If your using a custom container image, replace the URI in file `.\main.bicep `, save and close file.
+  5. Validate deployment:
 
-  2. Validate deployment:
-
-      `az deployment sub create --name deploy-cooldad-mvm-aks --template-file .\main.bicep --location eastus --what-if`
-  3. Apply deployment:
+      `az deployment sub create --name deploy-cooldad-mvm-aci --template-file .\main.bicep --location eastus --what-if` 
+  6. Apply deployment:
           
       `az deployment sub create --name deploy-cooldad-mvm-aks --template-file .\main.bicep --location eastus`
-      
-  4. Retrieve deployment outputs, take note of cluster's name or save in CLI variable for future use: 
+  5. Retrieve deployment outputs, take note of the ACI name and container IP address or save in CLI variable for future use: 
     
-      `az deployment sub show -n deploy-cooldad-mvm-aks --query properties.outputs.std_out.value ` 
--->
+      `az deployment sub show -n deploy-cooldad-mvm-aci --query properties.outputs.aci_name.value`\
+      `az deployment sub show -n deploy-cooldad-mvm-aci --query properties.outputs.container_ip.value`
+
+Move onto the <a href="#service">service</a> section to complete deployment. 
 
 ## Terraform
   1. In your console, navigate to: `.\deploy\caas\terraform\`
@@ -77,8 +103,10 @@ Code for this deployment pattern will be available soon.
       `terraform apply`
   8. Take note of the container name and IP address in the deployment output, or save in CLI variables for future use:
       
-      `container_name = "acicooldadmvmxxxx"`\
-      `container_ip_address = "x.x.x.x"`
+      `aci_name = "acicooldadmvmxxxx"`\
+      `container_ip = "x.x.x.x"`
+
+Move onto the next section to complete deployment. 
 
 ## Service
   1. Validate Minecraft server:

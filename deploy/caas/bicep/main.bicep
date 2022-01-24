@@ -23,7 +23,7 @@ param location string = deployment().location
 | _| `._____||_______|_______/     \______/   \______/  | _| `._____| \______||_______|    \______| | _| `._____| \______/   \______/  | _| */      
 targetScope = 'subscription'
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: 'rg-cooldad-mvm-aks'
+  name: 'rg-cooldad-mvm-aci'
   location: location
 }                                                                                                                                                
 
@@ -34,17 +34,18 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 |  |\  \----.|  |____.----)   |   |  `--'  | |  `--'  | |  |\  \----.|  `----.|  |____    |  '--'  ||  |____ |  |      |  `----.|  `--'  |     |  |     |  |  |  | |  |____ |  |\   |     |  |     
 | _| `._____||_______|_______/     \______/   \______/  | _| `._____| \______||_______|   |_______/ |_______|| _|      |_______| \______/      |__|     |__|  |__| |_______||__| \__|     |__| */     
 
-module aksCluster 'aks.bicep' = {
-  name: 'aksCluster'
+module aciGroup 'aci.bicep' = {
+  name: 'aciGroup'
   scope: resourceGroup
   params: {
     location: location
     resource_name_prefix: resource_name_prefix
-    kubernetes_version: '1.20.9'
+    docker_image_uri: 'docker.io/cooltechdad/minecraft-bds:0.6'
   }
 }
 
 //Genereate useful output
-output std_out string = aksCluster.outputs.std_out
+output aci_name string = aciGroup.outputs.aci_name
+output container_ip string =  aciGroup.outputs.container_ip
 
 //ACSCII Art link : https://textkool.com/en/ascii-art-generator?hl=default&vl=default&font=Star%20Wars&text=changeme
