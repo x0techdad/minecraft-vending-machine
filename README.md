@@ -57,7 +57,7 @@ By default, all deployments use the latest version of the project's own containe
 
 Ok, we have the server app, dependencies, and required OS components packaged in a Docker Image. Now what? We need to launch the image on computers to create the runtime container.  Our container also needs some persistent storage and a public network interface (Public IP) our Minecraft clients can connect to from anywhere :milky_way: on the Internet. 
   
-Cloud platforms, like Azure, come in very handy, providing us techies with access to immedidate avaiable, hyper scale, publically avaialble compute and storage sevices. The services offered by cloud providers provides us with a few different app hosting methods, each with its advantages over the others and ideal use cases. We offer a few different infrastructere pattern options to host game servers, each ideal for certain use cases. 
+Cloud platforms, like Azure, come in very handy, they provide us techies with access hyper scale, publically avaialble compute and storage sevices to host our workloads. These cloud services provide us with a few different methods for hosting apps, each with its advantages over the others and ideal use cases. This project offers infrastructere pattern options to host a game server, each ideal for specific use cases, details provided in the <a href="./deploy/deploy.md">deploy</a> doc.
 
 [Infrastructure as code (IaC)](https://youtu.be/WhWf48kcEXU) is used to automate the deployment and management of cloud resources. IaC allows devs to develop, deploy, and maintain application infrastructure just like software. In all deployment scenarios:
   
