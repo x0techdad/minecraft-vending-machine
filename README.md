@@ -17,7 +17,7 @@
 
   * If you'd like to contribute to code, you are fantastic, please check out the [contribute](#contribute) section.
 
-  * To skip to the fun part, head over to the [deploy](#deploy) doc. 
+  * To skip to the fun part, head over to the <a href="./deploy/deploy.md">deploy</a> doc.
   
   * Get help at the [CoolTech.Cloud Discord](https://discord.gg/JQ3Eg2nS) 
 
