@@ -48,8 +48,8 @@ To enable better cross-platform gameplay, we use the C++ Bedrock Dedicated Serve
   </p>
 
 Because I need to deploy and re-deploy servers quickly, the overall speed of deployment is critical. App portability is also a must-have since we have a variety of use cases for a Minecraft server. One of the most portable and fastest methods of hosting server applications and their underlying runtime (OS, libraries, platforms, etc.) is via app [containorization](https://www.docker.com/resources/what-container). We use [Ubuntu server](https://hub.docker.com/_/ubuntu/) as the base Operating System.
-  
-By default, all deployments reference an existing Docker container [image](https://hub.docker.com/repository/docker/cooltechdad/minecraft-bds) published on Docker Hub. However, you can also create and deploy your custom image. Check out the <a href="./image.md">image build</a> doc for details. 
+
+By default, all deployments use the latest version of the project's own container [image](https://hub.docker.com/r/cooltechdad/minecraft-bds/tags). If you'd like to build your own image (BYOI), pause here, follow the instructions on the <a href="./image.md">image build</a> doc.
   
   <p align="center">
     <img src="./images/mvm_docker_logo.png" width="400"></br>

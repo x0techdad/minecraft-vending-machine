@@ -29,7 +29,7 @@
     * To list all available subscriptions: `az account list`
 
 ## Server deploy
-All deployments use the latest version of CoolTechDad's Minecraft BDS container [image](https://hub.docker.com/r/cooltechdad/minecraft-bds/tags). If you'd like to build your own image, pause here, follow the instructions on the <a href="../image.md">image build</a> doc, and come back when you have your image's public URI.
+All deployments use the latest version of the project's own container [image](https://hub.docker.com/r/cooltechdad/minecraft-bds/tags). If you'd like to build your own, pause here, follow the instructions on the <a href="../image.md">image build</a> doc, and come back when you have your image's public URI.
 
 Pick a cloud infrastructure pattern that will host the Minecraft server, deploy it:
 

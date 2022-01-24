@@ -58,7 +58,7 @@ Follow the deployment steps of your preffered IaC tool:
             }
           ]
         ```
-  4. If your using a custom container image, replace the URI in file `.\main.bicep `, save and close file.
+  4. If you brought your own image, replace the URI in file `.\main.bicep `, save and close file.
   5. Validate deployment:
 
       `az deployment sub create --name deploy-cooldad-mvm-aci --template-file .\main.bicep --location eastus --what-if` 
@@ -91,7 +91,7 @@ Move onto the <a href="#service">service</a> section to complete deployment.
             "server_authoritative_movement" = "server-auth-with-rewind"
           }
           ```
-  4. If your using a custom container image, replace the URI in file `.\variables.tf `, save and close file.
+  4.If you brought your own image, replace the URI in file `.\variables.tf `, save and close file.
   5. Initialize Terraform and required backend (local state): 
   
       `terraform init`
