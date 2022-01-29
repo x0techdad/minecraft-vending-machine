@@ -4,7 +4,8 @@
   <a href="#intro">Intro</a> |
   <a href="#tech">Tech</a> |
   <a href="#overview">Overview</a> |
-  <a href="./deploy/deploy.md">Deploy</a>
+  <a href="./deploy/deploy.md">Deploy</a> |
+  <a href="./deploy/deploy.md#connect">Connect</a>
 </p>
 
 ## Intro
