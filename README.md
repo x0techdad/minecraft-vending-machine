@@ -82,7 +82,7 @@ Please follow the instructions below if you'd like to contribute to the project:
 ## Contributors
 * CoolTechDad\
   Twitter: [@x0coolTechDad](https://twitter.com/x0cooltechdad)\
-  GitHub: [@cool-tech-dad](https://github.com/cool-tech-dad)\
+  GitHub: [@x0coolTechDad](https://github.com/x0coolTechDad)\
   Discord: x0coolTechDad#7007
 
 * Ted Martin\
