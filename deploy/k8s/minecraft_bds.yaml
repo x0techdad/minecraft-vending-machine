@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ss-mc-bds-001
+  labels:
+    app: ss-mc-bds-001
+spec:
+  # never more than 1 since Minecraft is not horizontally scalable
+  replicas: 1
+  serviceName: ss-mc-bds-001
+  selector:
+    matchLabels:
+      app: mc-bds-001
+  template:
+    metadata:
+      labels:
+        app: mc-bds-001
+    spec:
+      volumes:
+        - name: pv-001
+          persistentVolumeClaim:
+            claimName:  pvc-001
+      containers:
+      - name: minecraft-bds-001
+        image: docker.io/cooltechdad/minecraft-bds:0.6
+        imagePullPolicy: Always
+        env:
+          - name: debug
+            value: "TRUE"
+          - name: bds_version
+            value: "1.18.2.03"
+          - name: eula
+            value: "TRUE"
+          - name: level_name #changing value results in player data loss
+            value: "Bedrock level"            
+          - name: gamemode
+            value: "creative"
+          - name: difficulty
+            value: "normal"
+          - name: allow_cheats
+            value: "false"
+          - name: max_players
+            value: "1000"
+          - name: server_authoritative_movement
+            value: "server-auth-with-rewind"
+        volumeMounts:
+          - name: pv-001
+            mountPath: /data
+        ports:
+          - containerPort: 19132
+            protocol: UDP
+            name: udp-bds
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: lb-mc-bds
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 19132
+    protocol: UDP
+    name: udp-bds
+  selector:
+    app: mc-bds-001
+  

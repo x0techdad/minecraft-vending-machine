@@ -1,6 +1,0 @@
-name: mvm-pulumi
-runtime:
-  name: python
-  options:
-    virtualenv: venv
-description: Minecraft Vending Machine built using Pulumi

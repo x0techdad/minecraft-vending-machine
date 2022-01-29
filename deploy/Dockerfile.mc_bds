@@ -1,0 +1,23 @@
+
+# Persistent data volume
+VOLUME ["/data"]
+WORKDIR /data
+
+# Copy Minecraft server bootstrap script
+COPY run_bds.sh /opt/
+RUN chmod +x /opt/run_bds.sh
+
+# Expost Minecraft server port (tcp)
+EXPOSE 19312
+
+# Add non-root user, switch user
+RUN useradd -u 8877 minecraft
+
+# Assign ower rights to work directory 
+RUN chown -R 8877 /data
+
+# Switch to non-root user
+USER minecraft
+
+# Execute bootstrap script
+ENTRYPOINT [ "/bin/bash", "/opt/run_bds.sh" ]
