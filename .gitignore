@@ -69,3 +69,6 @@ terraform.rc
 *.pub.*
 *.pub
 id_rsa
+
+# Local Python virtual env. 
+venv/
