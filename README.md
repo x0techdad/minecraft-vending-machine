@@ -8,7 +8,7 @@
 </p>
 
 ## Intro
-  Hello. I developed this project out of a need to quickly deploy and re-deploy our own [Minecraft](https://minecraft.fandom.com/wiki/Minecraft_Wiki) servers, as quickly and as cheap as possible*. The servers are used in various scenarios; work projects, family gaming, kid coding camps, and so dad can nerd out with his friends. :nerd_face:
+  Hello. This project was developed out of a need to quickly deploy and re-deploy our own [Minecraft](https://minecraft.fandom.com/wiki/Minecraft_Wiki) servers, as quickly and as cheap as possible*. The servers are used in various scenarios; work projects, family gaming, kid coding camps, and so dad can nerd out with his friends. :nerd_face:
   
   The project is also being used to demo, teach, learn, and play with the cool cloud tech listed in the [tech](#tech) section. 
   
@@ -37,7 +37,8 @@
   * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/what-is-azure-cli) 2.31.0
 * Infrastucture as Code (IaC) tools:
   * [Azure Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep)
-  * [HashiCorp Terraform](https://www.terraform.io/intro)
+  * [Pulumi](https://www.pulumi.com/docs/get-started/)
+  * [Terraform](https://www.terraform.io/intro)
 
 ## Overview
 [Minecraft](https://en.wikipedia.org/wiki/Minecraft) is a procedurally generated, sandbox-style video game developed in [C++](https://minecraft.fandom.com/wiki/Bedrock_Edition) and [Java](https://minecraft.fandom.com/wiki/Server). The server and client software are standalone applications, and due to licensing, we cannot redistribute server software. We'll need to download and install the binaries during each server build.
@@ -81,16 +82,20 @@ Please follow the instructions below if you'd like to contribute to the project:
 ## Contributors
 * CoolTechDad\
   Twitter: [@x0coolTechDad](https://twitter.com/x0cooltechdad)\
-  GitHub: [@cool-tech-dad](https://github.com/cool-tech-dad)\
+  GitHub:  [@cool-tech-dad](https://github.com/cool-tech-dad)\
   Discord: x0coolTechDad#7007
 
 * Ted Martin\
   GitHub: [TedMartin](https://github.com/tedmartn)\
   Discord: tedwreckz#0892
 
+* Brandon Babcock\
+  GitHub: [bbabcock1990](https://github.com/bbabcock1990)\
+  Discord: bking0100#4440
+
 ## Backlog
 - [X] Change server runtime context to a non-root user
-- [ ] Unzip server sowftware locally first, then move to PV, possible [bug](https://bugzilla.redhat.com/show_bug.cgi?id=1418606)
+- [ ] Unzip server software locally, then move to PV; address [bug](https://bugzilla.redhat.com/show_bug.cgi?id=1418606)
 - [ ] Add readiness probe to service spec 
 - [ ] Add backup to the persistent data store (Azure Files)
 - [ ] AKS with multiple node pools and Minecraft servers
@@ -98,7 +103,8 @@ Please follow the instructions below if you'd like to contribute to the project:
 
 ## Change Log
 * 0.5.0 Initial beta
-* 0.6.0 Non-root container, custom Docker image, add Terraform support
+* 0.6.0 Non-root container, build your own Docker image, add Terraform demo
+* 0.6.1 Add Pulumi demo
 
 [Distributed under the GNU V3 license](https://gnu.org/licenses)
 
