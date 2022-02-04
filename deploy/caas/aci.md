@@ -109,7 +109,7 @@ Move onto the <a href="#service">service</a> section to complete deployment.
 Move onto the next section to complete deployment. 
 
 ## Service
-  1. Validate Minecraft server:
+  1. Validate infrastructure deployment and server service:
       * Start the log stream:
 
         `az container attach --resource-group rg-cooldad-mvm-aci --name <container_name>`

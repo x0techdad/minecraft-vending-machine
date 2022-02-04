@@ -1,13 +1,24 @@
 """An Azure RM Python Pulumi MVM Program"""
 
-from ast import Name
-from asyncio import protocols
-from unicodedata import name
+#from ast import Name
+#from asyncio import protocols
+#from inspect import TPFLAGS_IS_ABSTRACT
+#from pickle import TRUE
+#from sys import prefix
+#from unicodedata import name
+
+#from pkg_resources import safe_name
 import pulumi
 from pulumi_azure_native import storage
 from pulumi_azure_native import resources
 from pulumi_azure_native import containerinstance
 from variables import *
+
+#Create resource names
+rg_name = "rg-cooldad-mvm-aci"
+resource_name_prefix = "pydadmvm"
+sa_name = "sta" + resource_name_prefix + deployment_unique_string
+aci_name = "aci" + resource_name_prefix + deployment_unique_string
 
 # Create an Azure Resource Group
 resource_group = resources.ResourceGroup(
@@ -16,7 +27,7 @@ resource_group = resources.ResourceGroup(
     location=region)
 
 # Create an Azure Storage Account
-storage_account = storage.StorageAccount(sa_name,
+storage_account = storage.StorageAccount(sa_name + "001",
     resource_group_name=resource_group.name,
     account_name=sa_name.lower(),
     sku=storage.SkuArgs(
@@ -25,7 +36,7 @@ storage_account = storage.StorageAccount(sa_name,
     kind=storage.Kind.FILE_STORAGE)
 
 # Create An Azure Storage Account File Share
-file_share = storage.FileShare(sa_name+"file-share",
+file_share = storage.FileShare(sa_name + "/file share",
     account_name=storage_account.name,
     enabled_protocols="SMB",
     resource_group_name=resource_group.name,
@@ -39,7 +50,7 @@ primary_key = storage.list_storage_account_keys_output(
 ).keys[0].value
 
 # Create An Azure Container Instance
-container_group = containerinstance.ContainerGroup(aci_name,
+container_group = containerinstance.ContainerGroup(aci_name + "001",
     container_group_name=aci_name,
     containers=[containerinstance.ContainerArgs(
         command=[],
@@ -86,5 +97,6 @@ container_group = containerinstance.ContainerGroup(aci_name,
     ]
 )
 
-# Export The Azure Container IP Address To Connect To
-pulumi.export("Container IP Address:", container_group.ip_address.apply(lambda ip: ip.ip))
+# Export The Azure Container Name and Pubic IP address
+pulumi.export("Container IP Address", container_group.ip_address.apply(lambda ip: ip.ip))
+pulumi.export("Container Name", container_group.name)
