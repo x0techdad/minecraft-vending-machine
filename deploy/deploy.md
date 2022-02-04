@@ -16,9 +16,15 @@
       `Invoke-WebRequest -Uri https://azcliprod.blob.core.windows.net/msi/azure-cli-2.31.0.msi -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi`
     * *nix: `curl -L https://aka.ms/InstallAzureCli | bash` 
     * macOS: `brew update && brew install azure-cli`
-4. Install a cloud infrastructure as code (IaC) tool:
+4. Install the preferred infrastructure as code (IaC) tool, required to deploy cloud infra:
     * [Azure Bicep CLI](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install#azure-cli): Platform-native, declarative, domain-specific 
     * [Terraform CLI](https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/azure-get-started): Most popular 3rd party IaC tool
+    * [Pulumi CLI](https://www.pulumi.com/docs/get-started/install/): Open source, developer-focused, multi-language IaC tool
+      * Additional [programming language](https://www.pulumi.com/docs/intro/languages/) dependencies:
+        * Python - *included demo
+        * Go
+        * Node.js
+        * .NET Core (C#, F#, VB)  
     * IMO, cloud-native interfaces usually provide better experience performance and keep project dependencies and costs down.
 5. Open a free Azure account, [create a PAYG subcription](https://azure.microsoft.com/en-us/free/):
     * [Verify](https://docs.microsoft.com/en-us/azure/role-based-access-control/check-access) that you have at least Owner role permissions on existing subscriptions.
@@ -29,14 +35,15 @@
     * To list all available subscriptions: `az account list`
 
 ## Server deploy
-All deployments use the latest version of the project's own container [image](https://hub.docker.com/r/cooltechdad/minecraft-bds/tags). If you'd like to build your own, pause here, follow the instructions on the <a href="../image.md">image build</a> doc, and come back when you have your image's public URI.
+All deployments use the latest version of the project's own container [image](https://hub.docker.com/r/cooltechdad/minecraft-bds/tags).\
+If you'd like to build your own, pause here, follow the instructions on the <a href="../image.md">image build</a> doc, and come back when you have your image's public URI.
 
 Pick a cloud infrastructure pattern that will host the Minecraft server, deploy it:
 
-  * ##### <a href="./caas/aci.md">Azure Container Instance (ACI)</a> (fast, small, cheap)
+  * #### <a href="./caas/aci.md">Azure Container Instance (ACI)</a> (fast, small, cheap)
     * ACI is primarily used to launch isolated containers without orchestration and management capability overheaed. 
     * ACI is a true CaaS and usually a cheaper alternative to K8S and its platform-managed variants (AKS, GKE, EKS).
-  * ##### <a href="./k8s/aks.md">Azure Kubernetes Service (AKS)</a>  (scalable, fully-managed, production-ready)
+  * #### <a href="./k8s/aks.md">Azure Kubernetes Service (AKS)</a>  (scalable, fully-managed, production-ready)
     * AKS is primarily used to launch, orchestrate, and manage the entire lifecycle of containers. 
   
   <p align="center">
@@ -58,7 +65,12 @@ After a successful deployment, load up your favorite non-Java [Minecraft client]
 ## Cleanup
 Cloud can get expensive fast, prevent surprise costs by forcibly deleting all resources when your done: 
 
-`az group list --query "[? starts_with(name, 'rg-cooldad-mvm')][].{name:name}" -o tsv | % {az group delete --resource-group $_ -y}`
+```
+az group list --query "[? starts_with(name, 'rg-cooldad-mvm')][].{name:name}" -o tsv | % {az group delete --resource-group $_ -y}
+```
+
+If you used Pulumi, leverage the handy destroy command to delete all cloud resources AND Pulumi deployment stack: `pulumi destroy`
+
 <p align="center">
   <img src="../images/it_was_all_a_dream.png" width=400>
 </p>

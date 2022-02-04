@@ -3,8 +3,9 @@
   <img src="../../images/mvm_logo.gif" width="400"></br>
   <a href="../../README.md">Home</a> |
   <a href="#prereqs">Prereqs</a> |
-  <a href="#bicep">Bicep</a> |
-  <a href="#terraform">Terraform</a> |
+  <a href="#bicep">Bicep IaC</a> |
+  <a href="#pulumi">Pulumi IaC</a> |
+  <a href="#terraform">Terraform IaC</a> |
   <a href="#service">Service</a>
 </p>
 
@@ -72,6 +73,54 @@ Follow the deployment steps of your preffered IaC tool:
 
 Move onto the <a href="#service">service</a> section to complete deployment. 
 
+## Pulumi
+  1. In your console, navigate to: `.\deploy\caas\pulumi\`
+  2. Customize deployment, open file: `.\variables.py`
+      * Specify preferred cloud region (eg. eastus) on line 2
+      * Specify a random 4-character alphanumeric string (eg. ws32) on line 3
+      * If you brought your own image, replace the URI on line 4. 
+      * Modify Minecraft [server](https://minecraft.fandom.com/wiki/Server.properties) environmental settings if required:
+        * Minecraft server version, specify "latest" or full version number: `"bds_version" = "1.18.2.03"`
+        * Environmental settings:
+          ```
+          minecraft_env_settings=[
+              {"name" : 'debug', "value" : "true"},
+              {"name" : 'eula', "value" : "TRUE"},
+              {"name" : 'bds_version', "value" : "1.18.2.03"},
+              {"name" : 'level_name', "value" : "Bedrock level"},
+              {"name" : 'gamemode', "value" : "creative"},
+              {"name" : 'allow_cheats', "value" : "false"},
+              {"name" : 'max_players', "value" : "1000"},
+              {"name" : 'server_authoritative_movement', "value" : "server-auth-with-rewind"}
+          ]
+          ```
+      * Save and close file
+  5. Install preffered progaramming [language runtime](https://www.pulumi.com/docs/get-started/azure/begin/#install-language-runtime), this demo uses [Python 3.8.10](https://www.python.org/downloads/release/python-3810/).
+  6. Install Python virtual environment module:
+
+      `sudo apt install python3-venv` 
+  7. Initialize & activate Python virtual environment: 
+  
+      `python3 -m venv env-mvm-aci`\
+      `source env-mvm-aci/bin/activate`
+
+  8. Log into Pulumi service (cloud state).
+
+      `pulumi login`  
+
+  9. Create deployment stack, hit 'enter' to accept default name:
+      
+      `pulumi stack init`
+  9. Deploy stack, accept changes: 
+  
+      `pulumi up`
+  8. Take note of the container name and IP address in the deployment output, or save in CLI variables for future use:
+      
+      `container_name = "acipydadmvmxxxx"`\
+      `container_ip = "x.x.x.x"`
+
+Move onto the <a href="#service">service</a> section to complete deployment. 
+
 ## Terraform
   1. In your console, navigate to: `.\deploy\caas\terraform\`
   2. Open file: `.\main.tf`
@@ -91,7 +140,7 @@ Move onto the <a href="#service">service</a> section to complete deployment.
             "server_authoritative_movement" = "server-auth-with-rewind"
           }
           ```
-  4.If you brought your own image, replace the URI in file `.\variables.tf `, save and close file.
+  4. If you brought your own image, replace the URI in file `.\variables.tf `, save and close file.
   5. Initialize Terraform and required backend (local state): 
   
       `terraform init`
@@ -109,7 +158,7 @@ Move onto the <a href="#service">service</a> section to complete deployment.
 Move onto the next section to complete deployment. 
 
 ## Service
-  1. Validate Minecraft server:
+  1. Validate infrastructure deployment and server service:
       * Start the log stream:
 
         `az container attach --resource-group rg-cooldad-mvm-aci --name <container_name>`
@@ -127,7 +176,6 @@ Move onto the next section to complete deployment.
   <p align="center">
     <img src="https://media3.giphy.com/media/l49K1yUmz5LjIu0GA/giphy.gif" width=300>
   </p>
-
 
 ## Deployment t-shooting
 * Use [platform activity](https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log#view-the-activity-log) logs to investigatge deployment errors.
