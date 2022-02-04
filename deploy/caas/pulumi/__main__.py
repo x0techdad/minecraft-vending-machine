@@ -98,5 +98,5 @@ container_group = containerinstance.ContainerGroup(aci_name + "001",
 )
 
 # Export The Azure Container Name and Pubic IP address
-pulumi.export("Container IP Address", container_group.ip_address.apply(lambda ip: ip.ip))
 pulumi.export("Container Name", container_group.name)
+pulumi.export("Container IP Address", container_group.ip_address.apply(lambda ip: ip.ip))
